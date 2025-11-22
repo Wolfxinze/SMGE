@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         .from('profiles')
         .select('id, onboarding_completed')
         .eq('id', session.user.id)
-        .single()
+        .single<{ id: string; onboarding_completed: boolean | null }>()
 
       if (profileError && profileError.code !== 'PGRST116') {
         // PGRST116 = row not found, which is expected for new users
