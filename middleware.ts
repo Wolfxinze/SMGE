@@ -57,16 +57,13 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(redirectUrl)
       }
 
-      // For admin routes, verify admin role
+      // For admin routes, verify admin role from JWT metadata
       if (isAdminRoute) {
-        // Fetch user's profile to check role
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
-          .single<{ role: string }>()
+        // Check role from JWT claims (no database query needed)
+        // Role is stored in user_metadata during signup/profile update
+        const userRole = session.user.user_metadata?.role || session.user.app_metadata?.role
 
-        if (profileError || profile?.role !== 'admin') {
+        if (userRole !== 'admin') {
           // Not an admin, redirect to dashboard with error
           const redirectUrl = new URL('/dashboard', request.url)
           redirectUrl.searchParams.set('error', 'unauthorized')
