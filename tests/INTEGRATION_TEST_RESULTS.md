@@ -240,9 +240,10 @@ Configuration:
 
 ## Test Artifacts
 
-- Integration test script: `tests/integration/manual-integration-test.sh`
-- Jest test suite: `tests/integration/infrastructure.test.ts`
 - This report: `tests/INTEGRATION_TEST_RESULTS.md`
+- Database migrations: `supabase/migrations/00001_initial_schema.sql`
+
+**Note:** Formal integration tests removed per code review. Will be added with proper test infrastructure in future tasks.
 
 ---
 
