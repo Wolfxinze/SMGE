@@ -230,16 +230,14 @@ export async function userHasRole(userId: string, role: string): Promise<boolean
       }
     }
 
-    // Now use service client to check role (authorized by above checks)
-    const serviceSupabase = createServiceClient()
-    const { data, error } = await serviceSupabase
-      .from('user_roles')
+    // Check role from profiles table (single source of truth)
+    const { data: profile, error } = await supabase
+      .from('profiles')
       .select('role')
-      .eq('user_id', userId)
-      .eq('role', role)
-      .single()
+      .eq('id', userId)
+      .single<{ role: string }>()
 
-    return !error && data !== null
+    return !error && profile?.role === role
   } catch {
     return false
   }
