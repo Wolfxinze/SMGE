@@ -57,7 +57,7 @@ export function useAuth(): UseAuthReturn {
     })
 
     // Listen for auth changes
-    const unsubscribe = onAuthStateChange((event, session) => {
+    const unsubscribe = onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })

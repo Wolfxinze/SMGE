@@ -43,7 +43,7 @@ export function useSession(): UseSessionReturn {
       })
 
     // Listen for auth changes
-    const unsubscribe = onAuthStateChange((event, newSession) => {
+    const unsubscribe = onAuthStateChange((_event, newSession) => {
       setSession(newSession)
       setLoading(false)
     })
