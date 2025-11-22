@@ -21,8 +21,9 @@ supabase db reset
 # Connect to your Supabase database
 psql postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres
 
-# Run migration file
+# Run migration files in order
 \i supabase/migrations/00001_initial_schema.sql
+\i supabase/migrations/00002_auth_schema.sql
 ```
 
 ### Option 3: Supabase Dashboard
@@ -41,7 +42,34 @@ psql postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres
   - RLS policies
   - Helper functions for token encryption/decryption
 
+- `00002_auth_schema.sql` - Authentication flow enhancements
+  - Automatic profile creation trigger on user signup
+  - Additional profile columns (last_sign_in_at, email_verified, auth_metadata, onboarding_completed)
+  - User sessions table for device management
+  - Auth helper functions:
+    - `handle_new_user()` - Auto-creates profile on signup
+    - `update_last_sign_in()` - Tracks user login activity
+    - `is_onboarding_complete()` - Checks onboarding status
+    - `complete_onboarding()` - Marks onboarding complete
+    - `get_subscription_tier()` - Returns user's subscription level
+    - `update_profile_from_oauth()` - Updates profile from OAuth data
+    - `cleanup_expired_sessions()` - Removes expired sessions
+  - Enhanced RLS policies for auth operations
+  - Performance indexes for auth-related queries
+
 ## Security Notes
+
+**Automatic Profile Creation:**
+- The `handle_new_user()` trigger automatically creates a profile when users sign up
+- Profile data is populated from auth metadata (full_name, avatar_url, etc.)
+- OAuth provider data is stored in the `auth_metadata` JSONB column
+- The trigger handles conflicts gracefully with ON CONFLICT DO UPDATE
+
+**Session Management:**
+- User sessions are tracked in `user_sessions` table
+- Sessions expire based on `expires_at` timestamp
+- Run `cleanup_expired_sessions()` periodically to remove old sessions
+- Users can only view/delete their own sessions via RLS
 
 **Token Encryption:**
 - OAuth tokens are encrypted using PostgreSQL's `pgcrypto` extension
