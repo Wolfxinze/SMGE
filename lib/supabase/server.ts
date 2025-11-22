@@ -200,15 +200,39 @@ export async function getUser() {
 /**
  * Helper function to verify user has specific role
  *
+ * SECURITY: Only allows checking own role or requires admin privileges
+ *
  * @param userId - User ID to check
  * @param role - Required role
  * @returns Boolean indicating if user has role
  */
 export async function userHasRole(userId: string, role: string): Promise<boolean> {
-  const supabase = createServiceClient()
-
   try {
-    const { data, error } = await supabase
+    const supabase = await createClient()
+
+    // Get current authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return false // Not authenticated
+    }
+
+    // Users can only check their own role unless they're admin
+    if (user.id !== userId) {
+      // Check if current user is admin by querying with RLS
+      const { data: currentUserProfile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single<{ role: string }>()
+
+      if (currentUserProfile?.role !== 'admin') {
+        return false // Unauthorized to check other users
+      }
+    }
+
+    // Now use service client to check role (authorized by above checks)
+    const serviceSupabase = createServiceClient()
+    const { data, error } = await serviceSupabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
