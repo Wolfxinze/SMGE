@@ -291,16 +291,9 @@ export function requiresBusinessAccount(provider: OAuthProviderKey): boolean {
  * @returns Array of available OAuth provider configurations
  */
 export function getAvailableProviders() {
-  return Object.values(OAUTH_PROVIDERS).filter(provider => {
-    // Check if provider credentials are configured
-    const envPrefix = provider.name.toUpperCase()
-    const clientIdKey = `${envPrefix}_OAUTH_CLIENT_ID`
-    const clientSecretKey = `${envPrefix}_OAUTH_CLIENT_SECRET`
-
-    // Only show providers that have credentials configured
-    // Note: In production, these would be checked server-side
-    return true // Return all providers in development
-  })
+  // Return all configured OAuth providers
+  // Note: In production, you might want to filter based on environment variables
+  return Object.values(OAUTH_PROVIDERS)
 }
 
 /**
