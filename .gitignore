@@ -1,0 +1,10 @@
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+
+# CCPM (Claude Code PM) workspace files
+.claude/epics/
+.claude/settings.local.json
+.DS_Store
+.idea/
