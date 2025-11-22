@@ -64,7 +64,7 @@ export async function middleware(request: NextRequest) {
           .from('profiles')
           .select('role')
           .eq('id', session.user.id)
-          .single()
+          .single<{ role: string }>()
 
         if (profileError || profile?.role !== 'admin') {
           // Not an admin, redirect to dashboard with error
