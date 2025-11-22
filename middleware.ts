@@ -59,9 +59,10 @@ export async function middleware(request: NextRequest) {
 
       // For admin routes, verify admin role from JWT metadata
       if (isAdminRoute) {
-        // Check role from JWT claims (no database query needed)
-        // Role is stored in user_metadata during signup/profile update
-        const userRole = session.user.user_metadata?.role || session.user.app_metadata?.role
+        // Check role from JWT app_metadata (server-managed, cannot be modified by client)
+        // SECURITY: Never use user_metadata for authorization - it's client-writable
+        // Role must be set in app_metadata via database trigger or Edge Function
+        const userRole = session.user.app_metadata?.role
 
         if (userRole !== 'admin') {
           // Not an admin, redirect to dashboard with error

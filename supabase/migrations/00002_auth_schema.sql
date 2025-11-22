@@ -240,8 +240,6 @@ COMMENT ON FUNCTION public.is_onboarding_complete IS 'Checks if user has complet
 COMMENT ON FUNCTION public.complete_onboarding IS 'Marks user onboarding as complete';
 COMMENT ON FUNCTION public.get_subscription_tier IS 'Returns user subscription tier for authorization';
 COMMENT ON FUNCTION public.update_profile_from_oauth IS 'Updates user profile with OAuth provider data';
-COMMENT ON FUNCTION public.cleanup_expired_sessions IS 'Removes expired or inactive sessions';
-COMMENT ON TABLE public.user_sessions IS 'Tracks active user sessions for device management';
 COMMENT ON COLUMN public.profiles.last_sign_in_at IS 'Timestamp of users last successful sign-in';
 COMMENT ON COLUMN public.profiles.email_verified IS 'Whether users email has been verified';
 COMMENT ON COLUMN public.profiles.auth_metadata IS 'OAuth provider metadata and additional auth info';
