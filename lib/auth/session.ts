@@ -189,7 +189,6 @@ export async function getSessionMetadata() {
     expiresIn: `${expiresIn} seconds`,
     needsRefresh: validation.needsRefresh || false,
     factors: session.user.factors?.map(f => f.factor_type) || [],
-    aal: session.aal || 'aal1', // Authentication Assurance Level
   }
 }
 
@@ -228,7 +227,9 @@ export async function getAuthenticationLevel(): Promise<'aal1' | 'aal2' | null> 
     return null
   }
 
-  return validation.session.aal || 'aal1'
+  // Check if user has MFA factors verified
+  const hasMFA = validation.session.user.factors?.some(f => f.status === 'verified') || false
+  return hasMFA ? 'aal2' : 'aal1'
 }
 
 /**
