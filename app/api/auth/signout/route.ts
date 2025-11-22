@@ -2,7 +2,7 @@
  * Sign Out Route Handler
  *
  * Handles user sign out by clearing the session and redirecting.
- * Supports both GET and POST methods for flexibility.
+ * Only supports POST method to prevent CSRF attacks.
  */
 
 import { createClient } from '@/lib/supabase/server'
@@ -42,11 +42,9 @@ async function handleSignOut(request: NextRequest) {
   }
 }
 
-// Support both GET and POST methods
-export async function GET(request: NextRequest) {
-  return handleSignOut(request)
-}
-
+// Only POST method supported to prevent CSRF attacks
+// GET requests would allow malicious sites to sign users out via:
+// <img src="https://yourapp.com/api/auth/signout">
 export async function POST(request: NextRequest) {
   return handleSignOut(request)
 }
