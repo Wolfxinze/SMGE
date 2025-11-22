@@ -225,58 +225,11 @@ CREATE INDEX IF NOT EXISTS idx_profiles_onboarding ON public.profiles(onboarding
 CREATE INDEX IF NOT EXISTS idx_profiles_auth_lookup ON public.profiles(id, email, role, subscription_tier);
 
 -- ============================================================================
--- SESSION MANAGEMENT TABLE
+-- SESSION MANAGEMENT
 -- ============================================================================
--- Table to track active sessions and device information
-CREATE TABLE IF NOT EXISTS public.user_sessions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-    session_token TEXT NOT NULL UNIQUE,
-    device_info JSONB DEFAULT '{}',
-    ip_address INET,
-    user_agent TEXT,
-    expires_at TIMESTAMPTZ NOT NULL,
-    last_activity_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Enable RLS on user_sessions
-ALTER TABLE public.user_sessions ENABLE ROW LEVEL SECURITY;
-
--- Users can only see their own sessions
-CREATE POLICY "Users can view own sessions"
-    ON public.user_sessions
-    FOR SELECT
-    TO authenticated
-    USING (auth.uid() = user_id);
-
--- Users can delete their own sessions (logout from devices)
-CREATE POLICY "Users can delete own sessions"
-    ON public.user_sessions
-    FOR DELETE
-    TO authenticated
-    USING (auth.uid() = user_id);
-
--- Index for session lookups
-CREATE INDEX IF NOT EXISTS idx_user_sessions_token ON public.user_sessions(session_token) WHERE is_active = TRUE;
-CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON public.user_sessions(user_id, is_active);
-CREATE INDEX IF NOT EXISTS idx_user_sessions_expires ON public.user_sessions(expires_at) WHERE is_active = TRUE;
-
--- Function to clean up expired sessions
-CREATE OR REPLACE FUNCTION public.cleanup_expired_sessions()
-RETURNS INTEGER AS $$
-DECLARE
-    deleted_count INTEGER;
-BEGIN
-    DELETE FROM public.user_sessions
-    WHERE expires_at < NOW()
-    OR (last_activity_at < NOW() - INTERVAL '30 days' AND is_active = TRUE);
-
-    GET DIAGNOSTICS deleted_count = ROW_COUNT;
-    RETURN deleted_count;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- Note: Session management is handled by Supabase Auth (auth.sessions table)
+-- Custom session tracking removed due to security concerns (plaintext token storage)
+-- If device tracking is needed in future, implement with encrypted tokens using pgcrypto
 
 -- ============================================================================
 -- COMMENTS
