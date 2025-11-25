@@ -6,10 +6,8 @@ import type { SimilaritySearchResult } from '@/lib/brand-brain/types';
  * Search for similar brand voices
  */
 export async function searchSimilarVoices(
-  brandId: string,
   query: string,
-  limit = 5,
-  threshold = 0.7
+  limit = 5
 ): Promise<SimilaritySearchResult[]> {
   const supabase = await createClient();
 
@@ -19,10 +17,8 @@ export async function searchSimilarVoices(
 
     // Call the RPC function with the embedding array directly (FIX for Critical Issue #5)
     const { data, error } = await (supabase as any).rpc('search_similar_voice', {
-      query_embedding: embedding, // Pass array directly, not as string
-      brand_id_filter: brandId,
-      match_threshold: threshold,
-      match_count: limit,
+      p_query_embedding: embedding, // Pass array directly, not as string
+      p_limit: limit,
     });
 
     if (error) {
@@ -49,8 +45,7 @@ export async function searchSimilarVoices(
 export async function searchSimilarContent(
   brandId: string,
   query: string,
-  limit = 10,
-  threshold = 0.6
+  limit = 10
 ): Promise<SimilaritySearchResult[]> {
   const supabase = await createClient();
 
@@ -60,10 +55,9 @@ export async function searchSimilarContent(
 
     // Call the RPC function with the embedding array directly (FIX for Critical Issue #5)
     const { data, error } = await (supabase as any).rpc('search_similar_content', {
-      query_embedding: embedding, // Pass array directly, not as string
-      brand_id_filter: brandId,
-      match_threshold: threshold,
-      match_count: limit,
+      p_brand_id: brandId,
+      p_query_embedding: embedding, // Pass array directly, not as string
+      p_limit: limit,
     });
 
     if (error) {
@@ -90,8 +84,7 @@ export async function searchSimilarContent(
 export async function searchGlobalContent(
   query: string,
   userId: string,
-  limit = 20,
-  threshold = 0.5
+  limit = 20
 ): Promise<Array<SimilaritySearchResult & { brand_name: string }>> {
   const supabase = await createClient();
 
@@ -101,10 +94,9 @@ export async function searchGlobalContent(
 
     // Call the RPC function with the embedding array directly (FIX for Critical Issue #5)
     const { data, error } = await (supabase as any).rpc('search_global_content', {
-      query_embedding: embedding, // Pass array directly, not as string
-      user_id_filter: userId,
-      match_threshold: threshold,
-      match_count: limit,
+      p_user_id: userId,
+      p_query_embedding: embedding, // Pass array directly, not as string
+      p_limit: limit,
     });
 
     if (error) {
@@ -149,10 +141,9 @@ export async function findVoiceMatchingContent(
 
     // Search for similar content using the voice embedding
     const { data, error } = await (supabase as any).rpc('search_similar_content', {
-      query_embedding: (voiceData as any).voice_embedding, // Pass array directly (FIX for Critical Issue #5)
-      brand_id_filter: brandId,
-      match_threshold: 0.7,
-      match_count: limit,
+      p_brand_id: brandId,
+      p_query_embedding: (voiceData as any).voice_embedding, // Pass array directly (FIX for Critical Issue #5)
+      p_limit: limit,
     });
 
     if (error) {

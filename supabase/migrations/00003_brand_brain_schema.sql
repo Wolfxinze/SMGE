@@ -562,6 +562,38 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Function to search for similar content across all user's brands
+CREATE OR REPLACE FUNCTION public.search_global_content(
+    p_user_id UUID,
+    p_query_embedding VECTOR(1536),
+    p_limit INTEGER DEFAULT 20
+)
+RETURNS TABLE (
+    id UUID,
+    content TEXT,
+    content_type VARCHAR(50),
+    brand_id UUID,
+    brand_name VARCHAR(255),
+    similarity FLOAT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        bce.id,
+        bce.content,
+        bce.content_type,
+        bce.brand_id,
+        b.name AS brand_name,
+        1 - (bce.embedding <=> p_query_embedding) AS similarity
+    FROM public.brand_content_examples bce
+    JOIN public.brands b ON b.id = bce.brand_id
+    WHERE b.user_id = p_user_id
+        AND bce.embedding IS NOT NULL
+    ORDER BY bce.embedding <=> p_query_embedding
+    LIMIT p_limit;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Function to get complete brand context
 CREATE OR REPLACE FUNCTION public.get_brand_context(p_brand_id UUID)
 RETURNS JSON AS $$
