@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ brandId: string }> }
 ) {
   const { brandId } = await params;
@@ -101,8 +101,8 @@ export async function PUT(
     let voice;
     if (existing) {
       // Update existing voice
-      const { data, error } = await supabase
-        .from('brand_voice')
+      const { data, error } = await (supabase
+        .from('brand_voice') as any)
         .update({
           tone,
           writing_style,
@@ -113,7 +113,7 @@ export async function PUT(
           brand_values,
           unique_selling_points,
           updated_at: new Date().toISOString(),
-        } as any)
+        })
         .eq('brand_id', brandId)
         .select()
         .single();
@@ -197,14 +197,14 @@ export async function PATCH(
     }
 
     // Update voice embedding
-    const { data, error } = await supabase
-      .from('brand_voice')
+    const { data, error } = await (supabase
+      .from('brand_voice') as any)
       .update({
         voice_embedding,
         embedding_version: 1,
         last_trained_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('brand_id', brandId)
       .select()
       .single();

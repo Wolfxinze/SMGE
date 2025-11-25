@@ -56,7 +56,8 @@ interface OnboardingFormData {
 
 export function useBrandOnboarding() {
   const router = useRouter();
-  const { user } = useSession();
+  const { session } = useSession();
+  const user = session?.user;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);

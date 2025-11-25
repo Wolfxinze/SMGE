@@ -18,7 +18,7 @@ export async function searchSimilarVoices(
     const embedding = await generateEmbedding(query);
 
     // Call the RPC function with the embedding array directly (FIX for Critical Issue #5)
-    const { data, error } = await supabase.rpc('search_similar_voice', {
+    const { data, error } = await (supabase as any).rpc('search_similar_voice', {
       query_embedding: embedding, // Pass array directly, not as string
       brand_id_filter: brandId,
       match_threshold: threshold,
@@ -30,7 +30,7 @@ export async function searchSimilarVoices(
       throw error;
     }
 
-    return (data || []).map(item => ({
+    return (data || []).map((item: any) => ({
       id: item.id,
       content_text: item.content_text || '',
       similarity_score: item.similarity,
@@ -59,7 +59,7 @@ export async function searchSimilarContent(
     const embedding = await generateEmbedding(query);
 
     // Call the RPC function with the embedding array directly (FIX for Critical Issue #5)
-    const { data, error } = await supabase.rpc('search_similar_content', {
+    const { data, error } = await (supabase as any).rpc('search_similar_content', {
       query_embedding: embedding, // Pass array directly, not as string
       brand_id_filter: brandId,
       match_threshold: threshold,
@@ -71,7 +71,7 @@ export async function searchSimilarContent(
       throw error;
     }
 
-    return (data || []).map(item => ({
+    return (data || []).map((item: any) => ({
       id: item.id,
       content_text: item.content_text,
       similarity_score: item.similarity,
@@ -100,7 +100,7 @@ export async function searchGlobalContent(
     const embedding = await generateEmbedding(query);
 
     // Call the RPC function with the embedding array directly (FIX for Critical Issue #5)
-    const { data, error } = await supabase.rpc('search_global_content', {
+    const { data, error } = await (supabase as any).rpc('search_global_content', {
       query_embedding: embedding, // Pass array directly, not as string
       user_id_filter: userId,
       match_threshold: threshold,
@@ -112,7 +112,7 @@ export async function searchGlobalContent(
       throw error;
     }
 
-    return (data || []).map(item => ({
+    return (data || []).map((item: any) => ({
       id: item.id,
       content_text: item.content_text,
       similarity_score: item.similarity,
@@ -143,13 +143,13 @@ export async function findVoiceMatchingContent(
       .eq('brand_id', brandId)
       .single();
 
-    if (voiceError || !voiceData?.voice_embedding) {
+    if (voiceError || !(voiceData as any)?.voice_embedding) {
       throw new Error('Brand voice not found or not trained');
     }
 
     // Search for similar content using the voice embedding
-    const { data, error } = await supabase.rpc('search_similar_content', {
-      query_embedding: voiceData.voice_embedding, // Pass array directly (FIX for Critical Issue #5)
+    const { data, error } = await (supabase as any).rpc('search_similar_content', {
+      query_embedding: (voiceData as any).voice_embedding, // Pass array directly (FIX for Critical Issue #5)
       brand_id_filter: brandId,
       match_threshold: 0.7,
       match_count: limit,
@@ -160,7 +160,7 @@ export async function findVoiceMatchingContent(
       throw error;
     }
 
-    return (data || []).map(item => ({
+    return (data || []).map((item: any) => ({
       id: item.id,
       content_text: item.content_text,
       similarity_score: item.similarity,

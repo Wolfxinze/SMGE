@@ -74,18 +74,19 @@ export async function PUT(
     const { name, description, website_url, industry, primary_color, secondary_color, is_active } = body;
 
     // Update brand
-    const { data: brand, error } = await supabase
-      .from('brands')
-      .update({
-        name,
-        description,
-        website_url,
-        industry,
-        primary_color,
-        secondary_color,
-        is_active,
-        updated_at: new Date().toISOString(),
-      } as any)
+    const updateData: Record<string, any> = {};
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (website_url !== undefined) updateData.website_url = website_url;
+    if (industry !== undefined) updateData.industry = industry;
+    if (primary_color !== undefined) updateData.primary_color = primary_color;
+    if (secondary_color !== undefined) updateData.secondary_color = secondary_color;
+    if (is_active !== undefined) updateData.is_active = is_active;
+    updateData.updated_at = new Date().toISOString();
+
+    const { data: brand, error } = await (supabase
+      .from('brands') as any)
+      .update(updateData)
       .eq('id', brandId)
       .select()
       .single();
@@ -106,7 +107,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ brandId: string }> }
 ) {
   const { brandId } = await params;
@@ -134,12 +135,12 @@ export async function DELETE(
     }
 
     // Soft delete by setting is_active to false
-    const { error } = await supabase
-      .from('brands')
+    const { error } = await (supabase
+      .from('brands') as any)
       .update({
         is_active: false,
         updated_at: new Date().toISOString(),
-      } as any)
+      })
       .eq('id', brandId);
 
     if (error) {
