@@ -324,7 +324,7 @@ export class PlatformOAuthManager {
         return {
           clientId: process.env.INSTAGRAM_CLIENT_ID!,
           clientSecret: process.env.INSTAGRAM_CLIENT_SECRET!,
-          redirectUri: `${baseUrl}/api/auth/oauth/callback/instagram`,
+          redirectUri: `${baseUrl}/api/scheduler/oauth/callback/instagram`,
           scopes: ['instagram_basic', 'instagram_content_publish', 'pages_read_engagement'],
           authorizationUrl: 'https://api.instagram.com/oauth/authorize',
           tokenUrl: 'https://api.instagram.com/oauth/access_token',
@@ -334,7 +334,7 @@ export class PlatformOAuthManager {
         return {
           clientId: process.env.TWITTER_CLIENT_ID!,
           clientSecret: process.env.TWITTER_CLIENT_SECRET!,
-          redirectUri: `${baseUrl}/api/auth/oauth/callback/twitter`,
+          redirectUri: `${baseUrl}/api/scheduler/oauth/callback/twitter`,
           scopes: ['tweet.read', 'tweet.write', 'users.read', 'offline.access'],
           authorizationUrl: 'https://twitter.com/i/oauth2/authorize',
           tokenUrl: 'https://api.twitter.com/2/oauth2/token',
@@ -344,7 +344,7 @@ export class PlatformOAuthManager {
         return {
           clientId: process.env.LINKEDIN_CLIENT_ID!,
           clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
-          redirectUri: `${baseUrl}/api/auth/oauth/callback/linkedin`,
+          redirectUri: `${baseUrl}/api/scheduler/oauth/callback/linkedin`,
           scopes: ['w_member_social', 'r_liteprofile', 'r_basicprofile'],
           authorizationUrl: 'https://www.linkedin.com/oauth/v2/authorization',
           tokenUrl: 'https://www.linkedin.com/oauth/v2/accessToken',
@@ -354,7 +354,7 @@ export class PlatformOAuthManager {
         return {
           clientId: process.env.TIKTOK_CLIENT_ID!,
           clientSecret: process.env.TIKTOK_CLIENT_SECRET!,
-          redirectUri: `${baseUrl}/api/auth/oauth/callback/tiktok`,
+          redirectUri: `${baseUrl}/api/scheduler/oauth/callback/tiktok`,
           scopes: ['user.info.basic', 'video.upload', 'video.publish'],
           authorizationUrl: 'https://www.tiktok.com/auth/authorize',
           tokenUrl: 'https://open-api.tiktok.com/oauth/access_token',
@@ -364,7 +364,7 @@ export class PlatformOAuthManager {
         return {
           clientId: process.env.FACEBOOK_CLIENT_ID!,
           clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
-          redirectUri: `${baseUrl}/api/auth/oauth/callback/facebook`,
+          redirectUri: `${baseUrl}/api/scheduler/oauth/callback/facebook`,
           scopes: ['pages_manage_posts', 'pages_read_engagement', 'public_profile'],
           authorizationUrl: 'https://www.facebook.com/v18.0/dialog/oauth',
           tokenUrl: 'https://graph.facebook.com/v18.0/oauth/access_token',
