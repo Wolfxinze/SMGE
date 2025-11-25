@@ -183,7 +183,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
   // Get user from subscription
   const { data: subscription } = await supabaseAdmin
     .from('subscriptions')
-    .select('user_id')
+    .select('user_id, id')
     .eq('stripe_subscription_id', subscriptionId)
     .single();
 
@@ -196,7 +196,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
   await supabaseAdmin.from('invoices').upsert(
     {
       user_id: subscription.user_id,
-      subscription_id: subscription.user_id,
+      subscription_id: subscription.id,
       stripe_invoice_id: invoice.id,
       stripe_customer_id: customerId,
       amount_due: invoice.amount_due,

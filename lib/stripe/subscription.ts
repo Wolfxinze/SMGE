@@ -39,6 +39,23 @@ export async function getOrCreateCustomer(userId: string, email: string): Promis
     },
   });
 
+  // Save customer_id to database to prevent orphaned customers
+  const { error } = await supabase
+    .from('subscriptions')
+    .insert({
+      user_id: userId,
+      stripe_customer_id: customer.id,
+      status: 'incomplete',
+      plan_id: 'free', // Default to free plan
+      current_period_start: new Date().toISOString(),
+      current_period_end: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString(), // 100 years for free tier
+    });
+
+  if (error) {
+    console.error('Failed to save customer_id to database:', error);
+    // Still return the customer ID but log the error for manual intervention
+  }
+
   return customer.id;
 }
 
@@ -279,10 +296,16 @@ export async function cancelSubscription(userId: string): Promise<boolean> {
 
   // Update in database
   const supabase = await createClient();
-  await supabase
+  const { error } = await supabase
     .from('subscriptions')
     .update({ cancel_at_period_end: true })
     .eq('id', subscription.id);
+
+  if (error) {
+    console.error('Failed to update subscription in database:', error);
+    // Consider: Should we rollback the Stripe change? Log for manual intervention
+    throw new Error('Database sync failed: ' + error.message);
+  }
 
   return true;
 }
@@ -303,10 +326,16 @@ export async function resumeSubscription(userId: string): Promise<boolean> {
 
   // Update in database
   const supabase = await createClient();
-  await supabase
+  const { error } = await supabase
     .from('subscriptions')
     .update({ cancel_at_period_end: false })
     .eq('id', subscription.id);
+
+  if (error) {
+    console.error('Failed to update subscription in database:', error);
+    // Consider: Should we rollback the Stripe change? Log for manual intervention
+    throw new Error('Database sync failed: ' + error.message);
+  }
 
   return true;
 }
@@ -345,6 +374,22 @@ export async function changeSubscriptionPlan(
     ],
     proration_behavior: 'always_invoice',
   });
+
+  // Update plan in database
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from('subscriptions')
+    .update({
+      plan_id: newPlanId,
+      stripe_price_id: newPriceId
+    })
+    .eq('id', subscription.id);
+
+  if (error) {
+    console.error('Failed to update subscription plan in database:', error);
+    // Consider: Should we rollback the Stripe change? Log for manual intervention
+    throw new Error('Database sync failed: ' + error.message);
+  }
 
   return true;
 }
