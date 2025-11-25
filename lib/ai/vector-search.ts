@@ -28,7 +28,7 @@ export async function searchSimilarVoices(
 
     return (data || []).map((item: any) => ({
       id: item.id,
-      content_text: item.content_text || '',
+      content: item.content || '',
       similarity_score: item.similarity,
       platform: item.platform,
       performance_score: item.performance_score,
@@ -67,7 +67,7 @@ export async function searchSimilarContent(
 
     return (data || []).map((item: any) => ({
       id: item.id,
-      content_text: item.content_text,
+      content: item.content,
       similarity_score: item.similarity,
       platform: item.platform,
       performance_score: item.performance_score,
@@ -106,7 +106,7 @@ export async function searchGlobalContent(
 
     return (data || []).map((item: any) => ({
       id: item.id,
-      content_text: item.content_text,
+      content: item.content,
       similarity_score: item.similarity,
       platform: item.platform,
       performance_score: item.performance_score,
@@ -153,7 +153,7 @@ export async function findVoiceMatchingContent(
 
     return (data || []).map((item: any) => ({
       id: item.id,
-      content_text: item.content_text,
+      content: item.content,
       similarity_score: item.similarity,
       platform: item.platform,
       performance_score: item.performance_score,

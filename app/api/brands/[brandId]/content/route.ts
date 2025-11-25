@@ -33,7 +33,7 @@ export async function POST(
     const {
       content_type,
       platform,
-      content_text,
+      content,
       embedding,
       performance_score,
       engagement_metrics,
@@ -41,9 +41,9 @@ export async function POST(
     } = body;
 
     // Validate required fields
-    if (!content_type || !content_text) {
+    if (!content_type || !content) {
       return NextResponse.json(
-        { error: 'content_type and content_text are required' },
+        { error: 'content_type and content are required' },
         { status: 400 }
       );
     }
@@ -55,7 +55,7 @@ export async function POST(
         brand_id: brandId,
         content_type,
         platform: platform || null,
-        content_text,
+        content,
         embedding: embedding || null,
         performance_score: performance_score || 0,
         engagement_metrics: engagement_metrics || null,

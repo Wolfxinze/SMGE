@@ -199,7 +199,7 @@ export function useBrandOnboarding() {
               body: JSON.stringify({
                 content_type: 'post',
                 platform: example.platform,
-                content_text: example.content,
+                content: example.content,
                 embedding: embedding,
                 performance_score: example.metrics?.engagement || 0,
                 engagement_metrics: example.metrics,

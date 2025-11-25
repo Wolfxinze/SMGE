@@ -38,7 +38,7 @@ export interface ContentExample {
   brand_id: string;
   content_type: 'post' | 'caption' | 'story' | 'article' | 'email' | 'other';
   platform?: string;
-  content_text: string;
+  content: string;
   content_metadata?: Record<string, any>;
   embedding?: number[];
   performance_score?: number;
@@ -108,7 +108,7 @@ export interface UpdateBrandVoiceRequest {
 export interface AddContentExampleRequest {
   content_type: 'post' | 'caption' | 'story' | 'article' | 'email' | 'other';
   platform?: string;
-  content_text: string;
+  content: string;
   content_metadata?: Record<string, any>;
   performance_score?: number;
   engagement_metrics?: Record<string, any>;
@@ -131,7 +131,7 @@ export interface SimilaritySearchRequest {
 
 export interface SimilaritySearchResult {
   id: string;
-  content_text: string;
+  content: string;
   similarity_score: number;
   platform?: string;
   performance_score?: number;
