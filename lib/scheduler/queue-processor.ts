@@ -122,6 +122,32 @@ export async function processScheduledPosts(
           throw new Error('Post not found');
         }
 
+        // Check rate limits before publishing
+        const platformLimits = {
+          twitter: { limit: 300, window_minutes: 180 },
+          instagram: { limit: 200, window_minutes: 1440 },
+          linkedin: { limit: 100, window_minutes: 1440 },
+          tiktok: { limit: 100, window_minutes: 1440 },
+          facebook: { limit: 200, window_minutes: 1440 },
+        };
+
+        const platformConfig = platformLimits[item.platform as keyof typeof platformLimits];
+        if (platformConfig) {
+          const { data: canPublish, error: rateLimitError } = await supabase.rpc('check_rate_limit', {
+            p_social_account_id: item.social_account_id,
+            p_platform: item.platform,
+            p_endpoint: '/posts/create',
+            p_limit: platformConfig.limit,
+            p_window_seconds: platformConfig.window_minutes * 60,
+          });
+
+          if (rateLimitError) {
+            console.warn(`Rate limit check failed for ${item.platform}:`, rateLimitError);
+          } else if (!canPublish) {
+            throw new Error(`Rate limit exceeded for ${item.platform}`);
+          }
+        }
+
         // Publish to platform
         const result = await platform.publishPost(post, post.platform_specific_data);
 
@@ -132,6 +158,12 @@ export async function processScheduledPosts(
             p_new_status: 'published',
             p_platform_post_id: result.platform_post_id,
             p_platform_url: result.platform_url,
+          });
+
+          // Increment rate limit counter after successful publish
+          await supabase.rpc('increment_rate_limit', {
+            p_social_account_id: item.social_account_id,
+            p_endpoint: '/posts/create',
           });
 
           stats.succeeded++;
