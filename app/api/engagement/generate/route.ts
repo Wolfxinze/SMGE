@@ -13,6 +13,10 @@ import type { GenerateResponseRequest } from '@/lib/types/engagement';
  * Generate AI response for an engagement item
  */
 export async function POST(request: NextRequest) {
+  // Store body data in outer scope for error recovery
+  let engagementItemId: string | undefined;
+  let brandId: string | undefined;
+
   try {
     const supabase = await createClient();
 
@@ -26,6 +30,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body: GenerateResponseRequest = await request.json();
+    engagementItemId = body.engagement_item_id;
+    brandId = body.brand_id;
 
     // Validate required fields
     if (!body.engagement_item_id || !body.brand_id) {
@@ -96,16 +102,17 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('POST /api/engagement/generate error:', error);
 
-    // Revert engagement item status on error
-    try {
-      const body: GenerateResponseRequest = await request.json();
-      const supabase = await createClient();
-      await supabase
-        .from('engagement_items')
-        .update({ status: 'pending' })
-        .eq('id', body.engagement_item_id);
-    } catch (updateError) {
-      console.error('Failed to revert status:', updateError);
+    // Revert engagement item status on error using stored ID
+    if (engagementItemId) {
+      try {
+        const supabase = await createClient();
+        await supabase
+          .from('engagement_items')
+          .update({ status: 'pending' })
+          .eq('id', engagementItemId);
+      } catch (updateError) {
+        console.error('Failed to revert status:', updateError);
+      }
     }
 
     return NextResponse.json({ error: error.message }, { status: 500 });

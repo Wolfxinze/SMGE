@@ -133,20 +133,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check for duplicate (idempotency)
-    const { data: existing } = await supabase
-      .from('engagement_items')
-      .select('id')
-      .eq('platform', body.platform)
-      .eq('external_id', body.external_id)
-      .single();
-
-    if (existing) {
-      return NextResponse.json(
-        { message: 'Engagement item already exists', id: existing.id },
-        { status: 200 }
-      );
-    }
+    // Note: Duplicate check removed - we'll handle it with unique constraint error below
 
     // Analyze sentiment
     const sentimentAnalysis = await analyzeSentiment(body.content);
@@ -197,6 +184,23 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
+      // Handle duplicate key error (unique constraint violation)
+      if (error.code === '23505') {
+        // Try to fetch the existing item
+        const { data: existing } = await supabase
+          .from('engagement_items')
+          .select('id')
+          .eq('platform', body.platform)
+          .eq('external_id', body.external_id)
+          .single();
+
+        if (existing) {
+          return NextResponse.json(
+            { message: 'Engagement item already exists', id: existing.id },
+            { status: 200 } // 200 for idempotency
+          );
+        }
+      }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 

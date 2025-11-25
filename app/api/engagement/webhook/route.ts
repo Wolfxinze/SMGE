@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { timingSafeEqual } from 'crypto';
 import { analyzeSentiment, calculatePriority, generateResponse } from '@/lib/services/engagement-ai';
 import type { WebhookPayload } from '@/lib/types/engagement';
 
@@ -16,9 +17,21 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Verify webhook secret
+    // Verify webhook secret using constant-time comparison
     const webhookSecret = request.headers.get('x-webhook-secret');
-    if (webhookSecret !== process.env.N8N_WEBHOOK_SECRET) {
+    const expectedSecret = process.env.N8N_WEBHOOK_SECRET || '';
+
+    if (!webhookSecret) {
+      return NextResponse.json({ error: 'Missing webhook secret' }, { status: 401 });
+    }
+
+    const isValid = webhookSecret.length === expectedSecret.length &&
+      timingSafeEqual(
+        Buffer.from(webhookSecret),
+        Buffer.from(expectedSecret)
+      );
+
+    if (!isValid) {
       return NextResponse.json({ error: 'Invalid webhook secret' }, { status: 401 });
     }
 
