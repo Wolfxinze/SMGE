@@ -55,6 +55,262 @@ export interface Database {
         }
       }
 
+      // Brand Brain tables
+      brands: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          slug: string
+          description: string | null
+          website_url: string | null
+          industry: string | null
+          primary_color: string | null
+          secondary_color: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          slug?: string
+          description?: string | null
+          website_url?: string | null
+          industry?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          slug?: string
+          description?: string | null
+          website_url?: string | null
+          industry?: string | null
+          primary_color?: string | null
+          secondary_color?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      brand_voice: {
+        Row: {
+          id: string
+          brand_id: string
+          tone: string[] | null
+          writing_style: string[] | null
+          communication_preferences: Json | null
+          keywords: string[] | null
+          avoid_phrases: string[] | null
+          content_themes: string[] | null
+          brand_values: string[] | null
+          unique_selling_points: string[] | null
+          voice_embedding: number[] | null
+          embedding_version: number | null
+          last_trained_at: string | null
+          training_sample_count: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          brand_id: string
+          tone?: string[] | null
+          writing_style?: string[] | null
+          communication_preferences?: Json | null
+          keywords?: string[] | null
+          avoid_phrases?: string[] | null
+          content_themes?: string[] | null
+          brand_values?: string[] | null
+          unique_selling_points?: string[] | null
+          voice_embedding?: number[] | null
+          embedding_version?: number | null
+          last_trained_at?: string | null
+          training_sample_count?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          brand_id?: string
+          tone?: string[] | null
+          writing_style?: string[] | null
+          communication_preferences?: Json | null
+          keywords?: string[] | null
+          avoid_phrases?: string[] | null
+          content_themes?: string[] | null
+          brand_values?: string[] | null
+          unique_selling_points?: string[] | null
+          voice_embedding?: number[] | null
+          embedding_version?: number | null
+          last_trained_at?: string | null
+          training_sample_count?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      brand_content_examples: {
+        Row: {
+          id: string
+          brand_id: string
+          content_type: 'post' | 'caption' | 'story' | 'article' | 'email' | 'other'
+          platform: string | null
+          content_text: string
+          content_metadata: Json | null
+          embedding: number[] | null
+          performance_score: number
+          engagement_metrics: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          brand_id: string
+          content_type: 'post' | 'caption' | 'story' | 'article' | 'email' | 'other'
+          platform?: string | null
+          content_text: string
+          content_metadata?: Json | null
+          embedding?: number[] | null
+          performance_score?: number
+          engagement_metrics?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          brand_id?: string
+          content_type?: 'post' | 'caption' | 'story' | 'article' | 'email' | 'other'
+          platform?: string | null
+          content_text?: string
+          content_metadata?: Json | null
+          embedding?: number[] | null
+          performance_score?: number
+          engagement_metrics?: Json | null
+          created_at?: string
+        }
+      }
+
+      target_audiences: {
+        Row: {
+          id: string
+          brand_id: string
+          name: string
+          demographics: Json | null
+          interests: string[] | null
+          pain_points: string[] | null
+          goals: string[] | null
+          preferred_platforms: string[] | null
+          content_preferences: Json | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          brand_id: string
+          name: string
+          demographics?: Json | null
+          interests?: string[] | null
+          pain_points?: string[] | null
+          goals?: string[] | null
+          preferred_platforms?: string[] | null
+          content_preferences?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          brand_id?: string
+          name?: string
+          demographics?: Json | null
+          interests?: string[] | null
+          pain_points?: string[] | null
+          goals?: string[] | null
+          preferred_platforms?: string[] | null
+          content_preferences?: Json | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      brand_guidelines: {
+        Row: {
+          id: string
+          brand_id: string
+          guideline_type: 'visual' | 'content' | 'tone' | 'legal' | 'other'
+          title: string
+          description: string | null
+          rules: Json | null
+          examples: string[] | null
+          priority: 'critical' | 'high' | 'medium' | 'low'
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          brand_id: string
+          guideline_type: 'visual' | 'content' | 'tone' | 'legal' | 'other'
+          title: string
+          description?: string | null
+          rules?: Json | null
+          examples?: string[] | null
+          priority?: 'critical' | 'high' | 'medium' | 'low'
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          brand_id?: string
+          guideline_type?: 'visual' | 'content' | 'tone' | 'legal' | 'other'
+          title?: string
+          description?: string | null
+          rules?: Json | null
+          examples?: string[] | null
+          priority?: 'critical' | 'high' | 'medium' | 'low'
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      brand_learning_history: {
+        Row: {
+          id: string
+          brand_id: string
+          learning_type: 'initial_training' | 'content_update' | 'voice_refinement' | 'manual_adjustment'
+          training_data: Json | null
+          samples_used: number | null
+          model_version: string | null
+          performance_metrics: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          brand_id: string
+          learning_type: 'initial_training' | 'content_update' | 'voice_refinement' | 'manual_adjustment'
+          training_data?: Json | null
+          samples_used?: number | null
+          model_version?: string | null
+          performance_metrics?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          brand_id?: string
+          learning_type?: 'initial_training' | 'content_update' | 'voice_refinement' | 'manual_adjustment'
+          training_data?: Json | null
+          samples_used?: number | null
+          model_version?: string | null
+          performance_metrics?: Json | null
+          created_at?: string
+        }
+      }
+
       // Brand Brain context store
       brand_context: {
         Row: {
@@ -261,7 +517,53 @@ export interface Database {
     }
 
     Functions: {
-      // Add database functions here as needed
+      // Vector search functions
+      search_similar_voice: {
+        Args: {
+          query_embedding: number[]
+          brand_id_filter: string
+          match_threshold: number
+          match_count: number
+        }
+        Returns: Array<{
+          id: string
+          content_text: string
+          similarity: number
+          platform: string | null
+          performance_score: number
+        }>
+      }
+      search_similar_content: {
+        Args: {
+          query_embedding: number[]
+          brand_id_filter: string
+          match_threshold: number
+          match_count: number
+        }
+        Returns: Array<{
+          id: string
+          content_text: string
+          similarity: number
+          platform: string | null
+          performance_score: number
+        }>
+      }
+      search_global_content: {
+        Args: {
+          query_embedding: number[]
+          user_id_filter: string
+          match_threshold: number
+          match_count: number
+        }
+        Returns: Array<{
+          id: string
+          content_text: string
+          similarity: number
+          platform: string | null
+          performance_score: number
+          brand_name: string
+        }>
+      }
     }
 
     Enums: {
