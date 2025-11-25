@@ -46,7 +46,7 @@ export default function NewPostPage() {
 
         setBrands(brandsData)
         // Auto-select first brand
-        setSelectedBrandId((brandsData as any)[0].id)
+        setSelectedBrandId(brandsData[0].id)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load brands')
       } finally {
@@ -114,7 +114,7 @@ export default function NewPostPage() {
         brandId={selectedBrandId}
         onPostGenerated={(post) => {
           // Optional: Navigate to post detail or queue
-          console.log('Post generated:', post)
+          // TODO: Add navigation or success notification
         }}
       />
     </div>
