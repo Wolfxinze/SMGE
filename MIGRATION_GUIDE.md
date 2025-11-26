@@ -228,6 +228,7 @@ ERROR: 42703: column "social_account_id" does not exist
 
 **Fix Applied:**
 - Commit f97d430 fixed migration 00008 with this pattern
+- Commit 6de165b fixed migration 00010 with this pattern
 
 ### Migration Safety:
 ✅ **All migrations (00001-00011) are now fully idempotent and safe to re-run!**
@@ -243,11 +244,12 @@ All migrations use these safe patterns:
 
 **Validation:** Run `bash validate-migrations.sh` to verify idempotency
 
-**Special Note on Migration 00008:**
-- Uses `DROP TABLE IF EXISTS CASCADE` instead of `CREATE TABLE IF NOT EXISTS`
+**Special Note on Migrations 00008 and 00010:**
+- Use `DROP TABLE IF EXISTS CASCADE` instead of `CREATE TABLE IF NOT EXISTS`
 - This handles partial migrations where tables exist with incomplete/wrong schema
 - Without DROP, PostgreSQL would skip CREATE but then fail on foreign key validation
-- Fixed in commit f97d430
+- Migration 00008 fixed in commit f97d430
+- Migration 00010 fixed in commit 6de165b
 
 ### If you need to reset:
 **⚠️ WARNING: This deletes ALL data!**
