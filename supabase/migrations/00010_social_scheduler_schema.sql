@@ -6,8 +6,11 @@
 -- ============================================================================
 -- POSTS TABLE - Content to be scheduled and published
 -- ============================================================================
+-- Drop table if it exists from partial migration to ensure clean schema
+DROP TABLE IF EXISTS public.posts CASCADE;
+
 -- Central table for all generated content (draft, scheduled, published)
-CREATE TABLE IF NOT EXISTS public.posts (
+CREATE TABLE public.posts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     brand_id UUID NOT NULL REFERENCES public.brands(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -54,8 +57,11 @@ COMMENT ON TABLE public.posts IS 'Generated social media content (draft, schedul
 -- ============================================================================
 -- SCHEDULED_POSTS TABLE - Scheduling and posting queue
 -- ============================================================================
+-- Drop table if it exists from partial migration to ensure clean schema
+DROP TABLE IF EXISTS public.scheduled_posts CASCADE;
+
 -- Links posts to social accounts with scheduling information
-CREATE TABLE IF NOT EXISTS public.scheduled_posts (
+CREATE TABLE public.scheduled_posts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
     social_account_id UUID NOT NULL REFERENCES public.social_accounts(id) ON DELETE CASCADE,
@@ -112,8 +118,11 @@ COMMENT ON TABLE public.scheduled_posts IS 'Scheduling queue linking posts to so
 -- ============================================================================
 -- PLATFORM_RATE_LIMITS TABLE - Track rate limit usage per platform
 -- ============================================================================
+-- Drop table if it exists from partial migration to ensure clean schema
+DROP TABLE IF EXISTS public.platform_rate_limits CASCADE;
+
 -- Prevents API quota violations by tracking request counts
-CREATE TABLE IF NOT EXISTS public.platform_rate_limits (
+CREATE TABLE public.platform_rate_limits (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     social_account_id UUID NOT NULL REFERENCES public.social_accounts(id) ON DELETE CASCADE,
     platform VARCHAR(50) NOT NULL CHECK (platform IN ('instagram', 'twitter', 'linkedin', 'tiktok', 'facebook')),
@@ -147,8 +156,11 @@ COMMENT ON TABLE public.platform_rate_limits IS 'Tracks API rate limit usage to 
 -- ============================================================================
 -- POSTING_ANALYTICS TABLE - Track performance of published posts
 -- ============================================================================
+-- Drop table if it exists from partial migration to ensure clean schema
+DROP TABLE IF EXISTS public.posting_analytics CASCADE;
+
 -- Stores analytics data fetched from social platforms
-CREATE TABLE IF NOT EXISTS public.posting_analytics (
+CREATE TABLE public.posting_analytics (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     scheduled_post_id UUID NOT NULL REFERENCES public.scheduled_posts(id) ON DELETE CASCADE,
     post_id UUID NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
