@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
     // Check for spam (simple heuristic)
     const isSpam =
       sentimentAnalysis.intent === 'spam' ||
-      body.content.match(/https?:\/\//g)?.length > 3 || // Too many links
+      (body.content.match(/https?:\/\//g)?.length ?? 0) > 3 || // Too many links
       body.content.length < 3; // Too short
 
     // Create engagement item

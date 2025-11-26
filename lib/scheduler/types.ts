@@ -27,12 +27,13 @@ export interface PlatformCredentials {
   access_token: string;
   refresh_token?: string;
   expires_at?: Date | string;
-  account_id?: string;
+  account_id: string;  // Required - used for cache keys and API calls
   scopes?: string[];
 }
 
 export interface QueueItem {
   id: string;
+  scheduled_post_id: string;
   post_id: string;
   social_account_id: string;
   brand_id: string;
@@ -298,16 +299,6 @@ export type PlatformSpecificData =
 // ============================================================================
 // QUEUE PROCESSING TYPES
 // ============================================================================
-
-export interface QueueItem {
-  scheduled_post_id: string;
-  post_id: string;
-  social_account_id: string;
-  platform: SocialPlatform;
-  scheduled_for: string;
-  content: string;
-  media_urls: string[];
-}
 
 export interface PublishResult {
   success: boolean;

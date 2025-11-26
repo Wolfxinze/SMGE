@@ -33,9 +33,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Use the approve_response database function
+    // Note: Supabase RPC typed as optional param (undefined), converts to NULL in database
     const { data, error } = await supabase.rpc('approve_response', {
       p_response_id: body.response_id,
-      p_edited_text: body.edited_text || null,
+      p_edited_text: body.edited_text || undefined,
     });
 
     if (error) {

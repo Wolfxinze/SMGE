@@ -38,7 +38,6 @@ const PLATFORM_COLORS: Record<string, string> = {
 export function SchedulerCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchScheduledPosts();
@@ -46,7 +45,6 @@ export function SchedulerCalendar() {
 
   async function fetchScheduledPosts() {
     try {
-      setLoading(true);
 
       // Calculate date range for current month
       const start = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -62,8 +60,6 @@ export function SchedulerCalendar() {
       }
     } catch (error) {
       console.error('Failed to fetch scheduled posts:', error);
-    } finally {
-      setLoading(false);
     }
   }
 

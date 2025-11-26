@@ -34,8 +34,8 @@ export interface PlatformOAuthConfig {
 export interface PlatformCredentials {
   access_token: string;
   refresh_token?: string;
-  expires_at?: Date;
-  account_id: string;
+  expires_at?: Date | string;
+  account_id: string;  // Required - used for cache keys and API calls
   scopes?: string[];
 }
 

@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     // Check for spam
     const isSpam =
       sentimentAnalysis.intent === 'spam' ||
-      engagementData.content.match(/https?:\/\//g)?.length > 3 ||
+      (engagementData.content.match(/https?:\/\//g)?.length ?? 0) > 3 ||
       engagementData.content.length < 3;
 
     // Create engagement item

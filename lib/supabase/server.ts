@@ -13,7 +13,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/lib/db/types'
 
 /**
  * Environment variable validation

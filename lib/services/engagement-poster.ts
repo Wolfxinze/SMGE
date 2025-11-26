@@ -4,7 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server';
-import type { GeneratedResponse, EngagementItem, Platform } from '@/lib/types/engagement';
+import type { EngagementItem, Platform } from '@/lib/types/engagement';
 
 interface PostResult {
   success: boolean;
@@ -40,15 +40,23 @@ async function getAccountCredentials(
   // Decrypt tokens using the encryption secret
   const encryptionSecret = process.env.SUPABASE_ENCRYPTION_SECRET!;
 
+  if (!account.access_token_encrypted) {
+    throw new Error('No access token available for account');
+  }
+
   const { data: accessTokenData } = await supabase.rpc('decrypt_token', {
     encrypted_token: account.access_token_encrypted,
     secret: encryptionSecret,
   });
 
-  const { data: refreshTokenData } = await supabase.rpc('decrypt_token', {
-    encrypted_token: account.refresh_token_encrypted,
-    secret: encryptionSecret,
-  });
+  let refreshTokenData;
+  if (account.refresh_token_encrypted) {
+    const result = await supabase.rpc('decrypt_token', {
+      encrypted_token: account.refresh_token_encrypted,
+      secret: encryptionSecret,
+    });
+    refreshTokenData = result.data;
+  }
 
   return {
     access_token: accessTokenData || '',
@@ -388,7 +396,7 @@ export async function postResponse(responseId: string): Promise<void> {
     console.log(`Successfully posted response ${responseId} to ${engagement.platform}`);
   } else {
     // Handle failure with retry logic
-    const newRetryCount = response.retry_count + 1;
+    const newRetryCount = (response.retry_count ?? 0) + 1;
     const maxRetries = 5;
 
     if (newRetryCount < maxRetries) {

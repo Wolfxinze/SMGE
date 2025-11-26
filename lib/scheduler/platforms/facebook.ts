@@ -25,15 +25,15 @@ export class FacebookPlatform extends BasePlatform {
     throw new Error('Facebook integration not yet implemented');
   }
 
-  async publishPost(post: Post): Promise<PublishResult> {
+  async publishPost(_post: Post): Promise<PublishResult> {
     throw new Error('Facebook integration not yet implemented');
   }
 
-  async deletePost(platformPostId: string): Promise<boolean> {
+  async deletePost(_platformPostId: string): Promise<boolean> {
     throw new Error('Facebook integration not yet implemented');
   }
 
-  async fetchAnalytics(platformPostId: string): Promise<Partial<PostingAnalytics>> {
+  async fetchAnalytics(_platformPostId: string): Promise<Partial<PostingAnalytics>> {
     throw new Error('Facebook integration not yet implemented');
   }
 
@@ -41,7 +41,7 @@ export class FacebookPlatform extends BasePlatform {
     throw new Error('Facebook integration not yet implemented');
   }
 
-  async validateContent(post: Post): Promise<void> {
+  async validateContent(_post: Post): Promise<void> {
     throw new Error('Facebook integration not yet implemented');
   }
 

@@ -15,7 +15,6 @@ import type { GenerateResponseRequest } from '@/lib/types/engagement';
 export async function POST(request: NextRequest) {
   // Store body data in outer scope for error recovery
   let engagementItemId: string | undefined;
-  let brandId: string | undefined;
 
   try {
     const supabase = await createClient();
@@ -31,7 +30,6 @@ export async function POST(request: NextRequest) {
 
     const body: GenerateResponseRequest = await request.json();
     engagementItemId = body.engagement_item_id;
-    brandId = body.brand_id;
 
     // Validate required fields
     if (!body.engagement_item_id || !body.brand_id) {

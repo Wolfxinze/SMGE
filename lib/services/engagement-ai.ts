@@ -6,13 +6,68 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { createClient } from '@/lib/supabase/server';
-import type { EngagementItem, GeneratedResponse } from '@/lib/types/engagement';
+import type { EngagementItem, GeneratedResponse, Platform, EngagementType, SentimentType, PriorityType, EngagementStatus } from '@/lib/types/engagement';
+import type { Database } from '@/lib/db/types';
 
-// Rate limiting configuration
-const RATE_LIMITS = {
-  openai: { requestsPerMinute: 60, tokensPerMinute: 90000 },
-  anthropic: { requestsPerMinute: 50, tokensPerMinute: 100000 },
-};
+// Rate limiting configuration (for future use)
+// const RATE_LIMITS = {
+//   openai: { requestsPerMinute: 60, tokensPerMinute: 90000 },
+//   anthropic: { requestsPerMinute: 50, tokensPerMinute: 100000 },
+// };
+
+/**
+ * Converts database row to EngagementItem type with proper enum validation
+ */
+function dbRowToEngagementItem(
+  row: Database['public']['Tables']['engagement_items']['Row']
+): EngagementItem {
+  // Validate platform enum
+  const validPlatforms: Platform[] = ['instagram', 'twitter', 'linkedin', 'tiktok', 'facebook'];
+  if (!validPlatforms.includes(row.platform as Platform)) {
+    throw new Error(`Invalid platform: ${row.platform}`);
+  }
+
+  // Validate engagement_type enum
+  const validTypes: EngagementType[] = ['comment', 'dm', 'mention'];
+  if (!validTypes.includes(row.engagement_type as EngagementType)) {
+    throw new Error(`Invalid engagement_type: ${row.engagement_type}`);
+  }
+
+  // Validate status enum if present
+  const validStatuses: EngagementStatus[] = ['pending', 'processing', 'responded', 'ignored', 'failed'];
+  const status = (row.status || 'pending') as EngagementStatus;
+  if (!validStatuses.includes(status)) {
+    throw new Error(`Invalid status: ${row.status}`);
+  }
+
+  return {
+    id: row.id,
+    brand_id: row.brand_id,
+    platform: row.platform as Platform,
+    social_account_id: row.social_account_id,
+    engagement_type: row.engagement_type as EngagementType,
+    external_id: row.external_id,
+    parent_post_id: row.parent_post_id,
+    author_username: row.author_username,
+    author_display_name: row.author_display_name,
+    author_profile_url: row.author_profile_url,
+    content: row.content,
+    original_post_content: row.original_post_content,
+    conversation_context: row.conversation_context as EngagementItem['conversation_context'],
+    sentiment: (row.sentiment as SentimentType) || 'neutral',
+    sentiment_score: row.sentiment_score,
+    detected_intent: row.detected_intent,
+    priority: (row.priority as PriorityType) || 'medium',
+    is_spam: row.is_spam || false,
+    is_influencer: row.is_influencer || false,
+    requires_response: row.requires_response || true,
+    status: status,
+    processed_at: row.processed_at,
+    created_at: row.created_at || new Date().toISOString(),
+    updated_at: row.updated_at || new Date().toISOString(),
+    raw_data: row.raw_data ? (row.raw_data as Record<string, any>) : undefined,
+  };
+}
 
 interface BrandContext {
   brand_name: string;
@@ -268,7 +323,7 @@ Return only the response text.`;
  */
 async function calculateVoiceSimilarity(
   responseText: string,
-  brandId: string
+  _brandId: string
 ): Promise<number> {
   try {
     const openai = new OpenAI({
@@ -288,8 +343,10 @@ async function calculateVoiceSimilarity(
     // For now, return a default similarity score
     try {
       const supabase = await createClient();
+      // Convert embedding array to pgvector format: [1,2,3,...]
+      const vectorString = `[${responseEmbedding.join(',')}]`;
       const { data, error } = await supabase.rpc('search_similar_voice', {
-        p_query_embedding: responseEmbedding,
+        p_query_embedding: vectorString,
         p_limit: 1,
       });
 
@@ -319,15 +376,18 @@ export async function generateResponse(
   const supabase = await createClient();
 
   // Fetch engagement item
-  const { data: engagement, error: engagementError } = await supabase
+  const { data: engagementRow, error: engagementError } = await supabase
     .from('engagement_items')
     .select('*')
     .eq('id', engagementItemId)
     .single();
 
-  if (engagementError || !engagement) {
+  if (engagementError || !engagementRow) {
     throw new Error('Engagement item not found');
   }
+
+  // Convert database row to typed EngagementItem with validation
+  const engagement = dbRowToEngagementItem(engagementRow);
 
   // Fetch brand context
   const brandContext = await getBrandContext(brandId);

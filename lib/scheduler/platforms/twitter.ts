@@ -356,7 +356,7 @@ export class TwitterPlatform extends BasePlatform {
   /**
    * Get rate limit status for endpoint
    */
-  async getRateLimitStatus(endpoint: string): Promise<{
+  async getRateLimitStatus(_endpoint: string): Promise<{
     remaining: number;
     limit: number;
     resets_at: Date;

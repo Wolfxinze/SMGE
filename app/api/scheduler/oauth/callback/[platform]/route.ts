@@ -111,7 +111,7 @@ export async function GET(
         account_id: accountInfo.account_id,
         access_token_encrypted: encryptedAccessToken,
         refresh_token_encrypted: encryptedRefreshToken,
-        token_expires_at: credentials.expires_at?.toISOString(),
+        token_expires_at: credentials.expires_at instanceof Date ? credentials.expires_at.toISOString() : credentials.expires_at,
         scopes: credentials.scopes || [],
         is_active: true,
         last_synced_at: new Date().toISOString(),
