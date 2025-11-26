@@ -189,6 +189,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- ============================================================================
 
 -- Policy for service role to manage all profiles (for admin operations)
+DROP POLICY IF EXISTS "Service role can manage all profiles" ON public.profiles;
 CREATE POLICY "Service role can manage all profiles"
     ON public.profiles
     FOR ALL
@@ -196,6 +197,7 @@ CREATE POLICY "Service role can manage all profiles"
     USING (TRUE);
 
 -- Policy for authenticated users to insert their own profile (for edge cases)
+DROP POLICY IF EXISTS "Users can create own profile if missing" ON public.profiles;
 CREATE POLICY "Users can create own profile if missing"
     ON public.profiles
     FOR INSERT
