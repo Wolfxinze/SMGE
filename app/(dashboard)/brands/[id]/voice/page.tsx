@@ -15,7 +15,7 @@ export default async function BrandVoicePage({
 }: {
   params: { id: string }
 }) {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // Check authentication
   const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -24,12 +24,12 @@ export default async function BrandVoicePage({
   }
 
   // Fetch brand details
-  const { data: brand, error: brandError } = await supabase
+  const { data: brand, error: brandError } = await (supabase
     .from('brands')
     .select('*')
     .eq('id', params.id)
     .eq('user_id', user.id)
-    .single()
+    .single() as any)
 
   if (brandError || !brand) {
     notFound()
