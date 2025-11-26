@@ -8,6 +8,7 @@
 -- ========================================
 
 -- Function to initialize free tier subscription for new users
+-- Note: This runs when a profile is created (triggered by auth.users insert via migration 00002)
 CREATE OR REPLACE FUNCTION public.initialize_free_tier()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -37,7 +38,8 @@ BEGIN
     NOW() + INTERVAL '100 years',  -- Free tier never expires
     NOW(),
     NOW()
-  );
+  )
+  ON CONFLICT (user_id) DO NOTHING;
 
   -- Initialize usage metrics for the new user
   INSERT INTO public.usage_metrics (
@@ -59,7 +61,8 @@ BEGIN
     0,
     NOW(),
     NOW()
-  );
+  )
+  ON CONFLICT (user_id, month) DO NOTHING;
 
   RETURN NEW;
 EXCEPTION
@@ -71,21 +74,20 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Drop trigger if it exists (for idempotency)
-DROP TRIGGER IF EXISTS on_user_created_initialize_free_tier ON auth.users;
+DROP TRIGGER IF EXISTS on_profile_created_initialize_free_tier ON public.profiles;
 
--- Create trigger on new user creation
-DROP TRIGGER IF EXISTS on_user_created_initialize_free_tier ON auth.users;
-CREATE TRIGGER on_user_created_initialize_free_tier
-  AFTER INSERT ON auth.users
+-- Create trigger on new profile creation (profiles are auto-created when users sign up via migration 00002)
+CREATE TRIGGER on_profile_created_initialize_free_tier
+  AFTER INSERT ON public.profiles
   FOR EACH ROW
   EXECUTE FUNCTION public.initialize_free_tier();
 
 -- Add comment for documentation
 COMMENT ON FUNCTION public.initialize_free_tier() IS
-'Automatically initializes free tier subscription for new users upon signup';
+'Automatically initializes free tier subscription for new users upon signup (triggered by profile creation)';
 
-COMMENT ON TRIGGER on_user_created_initialize_free_tier ON auth.users IS
-'Triggers free tier initialization when a new user is created';
+COMMENT ON TRIGGER on_profile_created_initialize_free_tier ON public.profiles IS
+'Triggers free tier initialization when a new user profile is created';
 
 -- ========================================
 -- Grant necessary permissions
