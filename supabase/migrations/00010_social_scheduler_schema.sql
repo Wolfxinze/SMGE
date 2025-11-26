@@ -38,10 +38,7 @@ CREATE TABLE public.posts (
     -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    published_at TIMESTAMPTZ, -- When actually published
-
-    -- Indexes for common queries
-    CONSTRAINT posts_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE
+    published_at TIMESTAMPTZ -- When actually published
 );
 
 -- Indexes
