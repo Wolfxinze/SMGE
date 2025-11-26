@@ -74,6 +74,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 DROP TRIGGER IF EXISTS on_user_created_initialize_free_tier ON auth.users;
 
 -- Create trigger on new user creation
+DROP TRIGGER IF EXISTS on_user_created_initialize_free_tier ON auth.users;
 CREATE TRIGGER on_user_created_initialize_free_tier
   AFTER INSERT ON auth.users
   FOR EACH ROW

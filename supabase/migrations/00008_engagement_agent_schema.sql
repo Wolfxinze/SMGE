@@ -54,14 +54,14 @@ CREATE TABLE public.engagement_items (
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_engagement_items_brand_id ON public.engagement_items(brand_id);
-CREATE INDEX idx_engagement_items_social_account_id ON public.engagement_items(social_account_id);
-CREATE INDEX idx_engagement_items_platform ON public.engagement_items(platform);
-CREATE INDEX idx_engagement_items_status ON public.engagement_items(status);
-CREATE INDEX idx_engagement_items_priority ON public.engagement_items(priority);
-CREATE INDEX idx_engagement_items_sentiment ON public.engagement_items(sentiment);
-CREATE INDEX idx_engagement_items_created_at ON public.engagement_items(created_at DESC);
-CREATE INDEX idx_engagement_items_requires_response ON public.engagement_items(requires_response) WHERE requires_response = true;
+CREATE INDEX IF NOT EXISTS idx_engagement_items_brand_id ON public.engagement_items(brand_id);
+CREATE INDEX IF NOT EXISTS idx_engagement_items_social_account_id ON public.engagement_items(social_account_id);
+CREATE INDEX IF NOT EXISTS idx_engagement_items_platform ON public.engagement_items(platform);
+CREATE INDEX IF NOT EXISTS idx_engagement_items_status ON public.engagement_items(status);
+CREATE INDEX IF NOT EXISTS idx_engagement_items_priority ON public.engagement_items(priority);
+CREATE INDEX IF NOT EXISTS idx_engagement_items_sentiment ON public.engagement_items(sentiment);
+CREATE INDEX IF NOT EXISTS idx_engagement_items_created_at ON public.engagement_items(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_engagement_items_requires_response ON public.engagement_items(requires_response) WHERE requires_response = true;
 
 -- Add comment
 COMMENT ON TABLE public.engagement_items IS 'Incoming social media comments and DMs with sentiment analysis and priority scoring';
@@ -114,12 +114,12 @@ CREATE TABLE public.generated_responses (
 );
 
 -- Create indexes
-CREATE INDEX idx_generated_responses_engagement_item_id ON public.generated_responses(engagement_item_id);
-CREATE INDEX idx_generated_responses_brand_id ON public.generated_responses(brand_id);
-CREATE INDEX idx_generated_responses_approval_status ON public.generated_responses(approval_status);
-CREATE INDEX idx_generated_responses_posting_status ON public.generated_responses(posting_status);
-CREATE INDEX idx_generated_responses_approved_by ON public.generated_responses(approved_by);
-CREATE INDEX idx_generated_responses_next_retry_at ON public.generated_responses(next_retry_at) WHERE posting_status = 'failed';
+CREATE INDEX IF NOT EXISTS idx_generated_responses_engagement_item_id ON public.generated_responses(engagement_item_id);
+CREATE INDEX IF NOT EXISTS idx_generated_responses_brand_id ON public.generated_responses(brand_id);
+CREATE INDEX IF NOT EXISTS idx_generated_responses_approval_status ON public.generated_responses(approval_status);
+CREATE INDEX IF NOT EXISTS idx_generated_responses_posting_status ON public.generated_responses(posting_status);
+CREATE INDEX IF NOT EXISTS idx_generated_responses_approved_by ON public.generated_responses(approved_by);
+CREATE INDEX IF NOT EXISTS idx_generated_responses_next_retry_at ON public.generated_responses(next_retry_at) WHERE posting_status = 'failed';
 
 -- Add comment
 COMMENT ON TABLE public.generated_responses IS 'AI-generated responses with approval workflow and posting status tracking';
@@ -166,11 +166,11 @@ CREATE TABLE public.engagement_history (
 );
 
 -- Create indexes
-CREATE INDEX idx_engagement_history_engagement_item_id ON public.engagement_history(engagement_item_id);
-CREATE INDEX idx_engagement_history_generated_response_id ON public.engagement_history(generated_response_id);
-CREATE INDEX idx_engagement_history_brand_id ON public.engagement_history(brand_id);
-CREATE INDEX idx_engagement_history_platform ON public.engagement_history(platform);
-CREATE INDEX idx_engagement_history_posted_at ON public.engagement_history(posted_at DESC);
+CREATE INDEX IF NOT EXISTS idx_engagement_history_engagement_item_id ON public.engagement_history(engagement_item_id);
+CREATE INDEX IF NOT EXISTS idx_engagement_history_generated_response_id ON public.engagement_history(generated_response_id);
+CREATE INDEX IF NOT EXISTS idx_engagement_history_brand_id ON public.engagement_history(brand_id);
+CREATE INDEX IF NOT EXISTS idx_engagement_history_platform ON public.engagement_history(platform);
+CREATE INDEX IF NOT EXISTS idx_engagement_history_posted_at ON public.engagement_history(posted_at DESC);
 
 -- Add comment
 COMMENT ON TABLE public.engagement_history IS 'Historical record of posted responses with performance metrics and learning data';
@@ -208,9 +208,9 @@ CREATE TABLE public.engagement_rules (
 );
 
 -- Create indexes
-CREATE INDEX idx_engagement_rules_brand_id ON public.engagement_rules(brand_id);
-CREATE INDEX idx_engagement_rules_is_active ON public.engagement_rules(is_active);
-CREATE INDEX idx_engagement_rules_priority ON public.engagement_rules(priority DESC);
+CREATE INDEX IF NOT EXISTS idx_engagement_rules_brand_id ON public.engagement_rules(brand_id);
+CREATE INDEX IF NOT EXISTS idx_engagement_rules_is_active ON public.engagement_rules(is_active);
+CREATE INDEX IF NOT EXISTS idx_engagement_rules_priority ON public.engagement_rules(priority DESC);
 
 -- Add comment
 COMMENT ON TABLE public.engagement_rules IS 'Automated rules for filtering, prioritizing, and auto-approving responses';
@@ -229,6 +229,7 @@ ALTER TABLE public.engagement_rules ENABLE ROW LEVEL SECURITY;
 -- ENGAGEMENT_ITEMS POLICIES
 -- ===================
 
+DROP POLICY IF EXISTS "Users can view engagement for their brands" ON public.engagement_items;
 CREATE POLICY "Users can view engagement for their brands"
     ON public.engagement_items FOR SELECT
     USING (
@@ -239,6 +240,7 @@ CREATE POLICY "Users can view engagement for their brands"
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert engagement for their brands" ON public.engagement_items;
 CREATE POLICY "Users can insert engagement for their brands"
     ON public.engagement_items FOR INSERT
     WITH CHECK (
@@ -249,6 +251,7 @@ CREATE POLICY "Users can insert engagement for their brands"
         )
     );
 
+DROP POLICY IF EXISTS "Users can update engagement for their brands" ON public.engagement_items;
 CREATE POLICY "Users can update engagement for their brands"
     ON public.engagement_items FOR UPDATE
     USING (
@@ -263,6 +266,7 @@ CREATE POLICY "Users can update engagement for their brands"
 -- GENERATED_RESPONSES POLICIES
 -- ===================
 
+DROP POLICY IF EXISTS "Users can view responses for their brands" ON public.generated_responses;
 CREATE POLICY "Users can view responses for their brands"
     ON public.generated_responses FOR SELECT
     USING (
@@ -273,6 +277,7 @@ CREATE POLICY "Users can view responses for their brands"
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert responses for their brands" ON public.generated_responses;
 CREATE POLICY "Users can insert responses for their brands"
     ON public.generated_responses FOR INSERT
     WITH CHECK (
@@ -283,6 +288,7 @@ CREATE POLICY "Users can insert responses for their brands"
         )
     );
 
+DROP POLICY IF EXISTS "Users can update responses for their brands" ON public.generated_responses;
 CREATE POLICY "Users can update responses for their brands"
     ON public.generated_responses FOR UPDATE
     USING (
@@ -297,6 +303,7 @@ CREATE POLICY "Users can update responses for their brands"
 -- ENGAGEMENT_HISTORY POLICIES
 -- ===================
 
+DROP POLICY IF EXISTS "Users can view history for their brands" ON public.engagement_history;
 CREATE POLICY "Users can view history for their brands"
     ON public.engagement_history FOR SELECT
     USING (
@@ -307,6 +314,7 @@ CREATE POLICY "Users can view history for their brands"
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert history for their brands" ON public.engagement_history;
 CREATE POLICY "Users can insert history for their brands"
     ON public.engagement_history FOR INSERT
     WITH CHECK (
@@ -321,6 +329,7 @@ CREATE POLICY "Users can insert history for their brands"
 -- ENGAGEMENT_RULES POLICIES
 -- ===================
 
+DROP POLICY IF EXISTS "Users can manage rules for their brands" ON public.engagement_rules;
 CREATE POLICY "Users can manage rules for their brands"
     ON public.engagement_rules FOR ALL
     USING (
@@ -559,21 +568,25 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- TRIGGERS
 -- ============================================================================
 
+DROP TRIGGER IF EXISTS update_engagement_items_updated_at ON public.engagement_items;
 CREATE TRIGGER update_engagement_items_updated_at
     BEFORE UPDATE ON public.engagement_items
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_generated_responses_updated_at ON public.generated_responses;
 CREATE TRIGGER update_generated_responses_updated_at
     BEFORE UPDATE ON public.generated_responses
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_engagement_history_updated_at ON public.engagement_history;
 CREATE TRIGGER update_engagement_history_updated_at
     BEFORE UPDATE ON public.engagement_history
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_engagement_rules_updated_at ON public.engagement_rules;
 CREATE TRIGGER update_engagement_rules_updated_at
     BEFORE UPDATE ON public.engagement_rules
     FOR EACH ROW

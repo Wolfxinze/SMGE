@@ -50,12 +50,12 @@ CREATE TABLE public.posts (
 );
 
 -- Indexes for efficient queries
-CREATE INDEX idx_posts_brand_id ON public.posts(brand_id);
-CREATE INDEX idx_posts_user_id ON public.posts(user_id);
-CREATE INDEX idx_posts_status ON public.posts(status);
-CREATE INDEX idx_posts_scheduled_for ON public.posts(scheduled_for) WHERE scheduled_for IS NOT NULL;
-CREATE INDEX idx_posts_platform ON public.posts(platform);
-CREATE INDEX idx_posts_created_at ON public.posts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_brand_id ON public.posts(brand_id);
+CREATE INDEX IF NOT EXISTS idx_posts_user_id ON public.posts(user_id);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON public.posts(status);
+CREATE INDEX IF NOT EXISTS idx_posts_scheduled_for ON public.posts(scheduled_for) WHERE scheduled_for IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_posts_platform ON public.posts(platform);
+CREATE INDEX IF NOT EXISTS idx_posts_created_at ON public.posts(created_at DESC);
 
 -- ============================================================================
 -- POST VERSIONS TABLE - Track edits and regenerations
@@ -76,7 +76,7 @@ CREATE TABLE public.post_versions (
     CONSTRAINT post_versions_unique UNIQUE(post_id, version_number)
 );
 
-CREATE INDEX idx_post_versions_post_id ON public.post_versions(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_versions_post_id ON public.post_versions(post_id);
 
 -- ============================================================================
 -- ROW LEVEL SECURITY (RLS)
@@ -87,27 +87,32 @@ ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.post_versions ENABLE ROW LEVEL SECURITY;
 
 -- Posts policies
+DROP POLICY IF EXISTS "Users can view own posts" ON public.posts;
 CREATE POLICY "Users can view own posts"
     ON public.posts
     FOR SELECT
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create own posts" ON public.posts;
 CREATE POLICY "Users can create own posts"
     ON public.posts
     FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own posts" ON public.posts;
 CREATE POLICY "Users can update own posts"
     ON public.posts
     FOR UPDATE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own posts" ON public.posts;
 CREATE POLICY "Users can delete own posts"
     ON public.posts
     FOR DELETE
     USING (auth.uid() = user_id);
 
 -- Post versions policies
+DROP POLICY IF EXISTS "Users can view versions of own posts" ON public.post_versions;
 CREATE POLICY "Users can view versions of own posts"
     ON public.post_versions
     FOR SELECT
@@ -119,6 +124,7 @@ CREATE POLICY "Users can view versions of own posts"
         )
     );
 
+DROP POLICY IF EXISTS "Users can create versions for own posts" ON public.post_versions;
 CREATE POLICY "Users can create versions for own posts"
     ON public.post_versions
     FOR INSERT
@@ -143,6 +149,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS posts_updated_at ON public.posts;
 CREATE TRIGGER posts_updated_at
     BEFORE UPDATE ON public.posts
     FOR EACH ROW
@@ -180,6 +187,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS posts_create_version ON public.posts;
 CREATE TRIGGER posts_create_version
     BEFORE UPDATE ON public.posts
     FOR EACH ROW

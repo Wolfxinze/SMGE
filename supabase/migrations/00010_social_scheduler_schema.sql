@@ -42,11 +42,11 @@ CREATE TABLE IF NOT EXISTS public.posts (
 );
 
 -- Indexes
-CREATE INDEX idx_posts_brand_id ON public.posts(brand_id);
-CREATE INDEX idx_posts_user_id ON public.posts(user_id);
-CREATE INDEX idx_posts_status ON public.posts(status);
-CREATE INDEX idx_posts_approval_status ON public.posts(approval_status);
-CREATE INDEX idx_posts_created_at ON public.posts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_posts_brand_id ON public.posts(brand_id);
+CREATE INDEX IF NOT EXISTS idx_posts_user_id ON public.posts(user_id);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON public.posts(status);
+CREATE INDEX IF NOT EXISTS idx_posts_approval_status ON public.posts(approval_status);
+CREATE INDEX IF NOT EXISTS idx_posts_created_at ON public.posts(created_at DESC);
 
 -- Comment
 COMMENT ON TABLE public.posts IS 'Generated social media content (draft, scheduled, or published)';
@@ -95,15 +95,15 @@ CREATE TABLE IF NOT EXISTS public.scheduled_posts (
 );
 
 -- Indexes for queue processing
-CREATE INDEX idx_scheduled_posts_post_id ON public.scheduled_posts(post_id);
-CREATE INDEX idx_scheduled_posts_social_account_id ON public.scheduled_posts(social_account_id);
-CREATE INDEX idx_scheduled_posts_brand_id ON public.scheduled_posts(brand_id);
-CREATE INDEX idx_scheduled_posts_status ON public.scheduled_posts(status);
-CREATE INDEX idx_scheduled_posts_scheduled_for ON public.scheduled_posts(scheduled_for);
-CREATE INDEX idx_scheduled_posts_next_retry_at ON public.scheduled_posts(next_retry_at) WHERE status = 'failed';
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_post_id ON public.scheduled_posts(post_id);
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_social_account_id ON public.scheduled_posts(social_account_id);
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_brand_id ON public.scheduled_posts(brand_id);
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_status ON public.scheduled_posts(status);
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_scheduled_for ON public.scheduled_posts(scheduled_for);
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_next_retry_at ON public.scheduled_posts(next_retry_at) WHERE status = 'failed';
 
 -- Composite index for queue processing (find posts due for publishing)
-CREATE INDEX idx_scheduled_posts_pending_queue ON public.scheduled_posts(status, scheduled_for)
+CREATE INDEX IF NOT EXISTS idx_scheduled_posts_pending_queue ON public.scheduled_posts(status, scheduled_for)
     WHERE status = 'pending' OR status = 'failed';
 
 -- Comment
@@ -137,9 +137,9 @@ CREATE TABLE IF NOT EXISTS public.platform_rate_limits (
 );
 
 -- Indexes
-CREATE INDEX idx_platform_rate_limits_social_account_id ON public.platform_rate_limits(social_account_id);
-CREATE INDEX idx_platform_rate_limits_resets_at ON public.platform_rate_limits(resets_at);
-CREATE INDEX idx_platform_rate_limits_platform ON public.platform_rate_limits(platform);
+CREATE INDEX IF NOT EXISTS idx_platform_rate_limits_social_account_id ON public.platform_rate_limits(social_account_id);
+CREATE INDEX IF NOT EXISTS idx_platform_rate_limits_resets_at ON public.platform_rate_limits(resets_at);
+CREATE INDEX IF NOT EXISTS idx_platform_rate_limits_platform ON public.platform_rate_limits(platform);
 
 -- Comment
 COMMENT ON TABLE public.platform_rate_limits IS 'Tracks API rate limit usage to prevent quota violations';
@@ -181,10 +181,10 @@ CREATE TABLE IF NOT EXISTS public.posting_analytics (
 );
 
 -- Indexes
-CREATE INDEX idx_posting_analytics_scheduled_post_id ON public.posting_analytics(scheduled_post_id);
-CREATE INDEX idx_posting_analytics_post_id ON public.posting_analytics(post_id);
-CREATE INDEX idx_posting_analytics_platform ON public.posting_analytics(platform);
-CREATE INDEX idx_posting_analytics_engagement_rate ON public.posting_analytics(engagement_rate DESC NULLS LAST);
+CREATE INDEX IF NOT EXISTS idx_posting_analytics_scheduled_post_id ON public.posting_analytics(scheduled_post_id);
+CREATE INDEX IF NOT EXISTS idx_posting_analytics_post_id ON public.posting_analytics(post_id);
+CREATE INDEX IF NOT EXISTS idx_posting_analytics_platform ON public.posting_analytics(platform);
+CREATE INDEX IF NOT EXISTS idx_posting_analytics_engagement_rate ON public.posting_analytics(engagement_rate DESC NULLS LAST);
 
 -- Comment
 COMMENT ON TABLE public.posting_analytics IS 'Performance metrics for published posts fetched from social platforms';
@@ -204,11 +204,13 @@ ALTER TABLE public.posting_analytics ENABLE ROW LEVEL SECURITY;
 -- ===================
 
 -- Users can view their own posts
+DROP POLICY IF EXISTS "Users can view own posts" ON public.posts;
 CREATE POLICY "Users can view own posts"
     ON public.posts FOR SELECT
     USING (auth.uid() = user_id);
 
 -- Users can create posts for their brands
+DROP POLICY IF EXISTS "Users can create posts for own brands" ON public.posts;
 CREATE POLICY "Users can create posts for own brands"
     ON public.posts FOR INSERT
     WITH CHECK (
@@ -221,12 +223,14 @@ CREATE POLICY "Users can create posts for own brands"
     );
 
 -- Users can update their own posts
+DROP POLICY IF EXISTS "Users can update own posts" ON public.posts;
 CREATE POLICY "Users can update own posts"
     ON public.posts FOR UPDATE
     USING (auth.uid() = user_id)
     WITH CHECK (auth.uid() = user_id);
 
 -- Users can delete their own posts
+DROP POLICY IF EXISTS "Users can delete own posts" ON public.posts;
 CREATE POLICY "Users can delete own posts"
     ON public.posts FOR DELETE
     USING (auth.uid() = user_id);
@@ -236,6 +240,7 @@ CREATE POLICY "Users can delete own posts"
 -- ===================
 
 -- Users can view scheduled posts for their brands
+DROP POLICY IF EXISTS "Users can view own scheduled posts" ON public.scheduled_posts;
 CREATE POLICY "Users can view own scheduled posts"
     ON public.scheduled_posts FOR SELECT
     USING (
@@ -247,6 +252,7 @@ CREATE POLICY "Users can view own scheduled posts"
     );
 
 -- Users can create scheduled posts for their brands
+DROP POLICY IF EXISTS "Users can create scheduled posts for own brands" ON public.scheduled_posts;
 CREATE POLICY "Users can create scheduled posts for own brands"
     ON public.scheduled_posts FOR INSERT
     WITH CHECK (
@@ -258,6 +264,7 @@ CREATE POLICY "Users can create scheduled posts for own brands"
     );
 
 -- Users can update scheduled posts for their brands
+DROP POLICY IF EXISTS "Users can update own scheduled posts" ON public.scheduled_posts;
 CREATE POLICY "Users can update own scheduled posts"
     ON public.scheduled_posts FOR UPDATE
     USING (
@@ -276,6 +283,7 @@ CREATE POLICY "Users can update own scheduled posts"
     );
 
 -- Users can delete scheduled posts for their brands
+DROP POLICY IF EXISTS "Users can delete own scheduled posts" ON public.scheduled_posts;
 CREATE POLICY "Users can delete own scheduled posts"
     ON public.scheduled_posts FOR DELETE
     USING (
@@ -291,6 +299,7 @@ CREATE POLICY "Users can delete own scheduled posts"
 -- ===================
 
 -- Users can view rate limits for their social accounts
+DROP POLICY IF EXISTS "Users can view own rate limits" ON public.platform_rate_limits;
 CREATE POLICY "Users can view own rate limits"
     ON public.platform_rate_limits FOR SELECT
     USING (
@@ -302,6 +311,7 @@ CREATE POLICY "Users can view own rate limits"
     );
 
 -- Service role can manage rate limits (for background jobs)
+DROP POLICY IF EXISTS "Service role can manage rate limits" ON public.platform_rate_limits;
 CREATE POLICY "Service role can manage rate limits"
     ON public.platform_rate_limits FOR ALL
     USING (auth.jwt()->>'role' = 'service_role');
@@ -311,6 +321,7 @@ CREATE POLICY "Service role can manage rate limits"
 -- ===================
 
 -- Users can view analytics for their posts
+DROP POLICY IF EXISTS "Users can view own post analytics" ON public.posting_analytics;
 CREATE POLICY "Users can view own post analytics"
     ON public.posting_analytics FOR SELECT
     USING (
@@ -322,6 +333,7 @@ CREATE POLICY "Users can view own post analytics"
     );
 
 -- Service role can manage analytics (for background jobs)
+DROP POLICY IF EXISTS "Service role can manage analytics" ON public.posting_analytics;
 CREATE POLICY "Service role can manage analytics"
     ON public.posting_analytics FOR ALL
     USING (auth.jwt()->>'role' = 'service_role');
@@ -545,21 +557,25 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- ============================================================================
 
 -- Update updated_at timestamp
+DROP TRIGGER IF EXISTS update_posts_updated_at ON public.posts;
 CREATE TRIGGER update_posts_updated_at
     BEFORE UPDATE ON public.posts
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_scheduled_posts_updated_at ON public.scheduled_posts;
 CREATE TRIGGER update_scheduled_posts_updated_at
     BEFORE UPDATE ON public.scheduled_posts
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_platform_rate_limits_updated_at ON public.platform_rate_limits;
 CREATE TRIGGER update_platform_rate_limits_updated_at
     BEFORE UPDATE ON public.platform_rate_limits
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_posting_analytics_updated_at ON public.posting_analytics;
 CREATE TRIGGER update_posting_analytics_updated_at
     BEFORE UPDATE ON public.posting_analytics
     FOR EACH ROW

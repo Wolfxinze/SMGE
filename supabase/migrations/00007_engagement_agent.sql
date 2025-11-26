@@ -79,11 +79,11 @@ CREATE TABLE public.engagement_analytics (
 );
 
 -- Add indexes for performance
-CREATE INDEX engagement_items_brand_id_status_idx ON engagement_items(brand_id, status);
-CREATE INDEX engagement_items_created_at_idx ON engagement_items(created_at DESC);
-CREATE INDEX engagement_responses_engagement_item_id_idx ON engagement_responses(engagement_item_id);
-CREATE INDEX engagement_rules_brand_id_platform_idx ON engagement_rules(brand_id, platform);
-CREATE INDEX engagement_analytics_brand_id_date_idx ON engagement_analytics(brand_id, date DESC);
+CREATE INDEX IF NOT EXISTS engagement_items_brand_id_status_idx ON engagement_items(brand_id, status);
+CREATE INDEX IF NOT EXISTS engagement_items_created_at_idx ON engagement_items(created_at DESC);
+CREATE INDEX IF NOT EXISTS engagement_responses_engagement_item_id_idx ON engagement_responses(engagement_item_id);
+CREATE INDEX IF NOT EXISTS engagement_rules_brand_id_platform_idx ON engagement_rules(brand_id, platform);
+CREATE INDEX IF NOT EXISTS engagement_analytics_brand_id_date_idx ON engagement_analytics(brand_id, date DESC);
 
 -- Enable Row Level Security
 ALTER TABLE engagement_items ENABLE ROW LEVEL SECURITY;
@@ -92,6 +92,7 @@ ALTER TABLE engagement_rules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE engagement_analytics ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies
+DROP POLICY IF EXISTS "Users can view their brand's engagement items" ON engagement_items;
 CREATE POLICY "Users can view their brand's engagement items" ON engagement_items
   FOR SELECT USING (
     brand_id IN (
@@ -99,6 +100,7 @@ CREATE POLICY "Users can view their brand's engagement items" ON engagement_item
     )
   );
 
+DROP POLICY IF EXISTS "Users can insert their brand's engagement items" ON engagement_items;
 CREATE POLICY "Users can insert their brand's engagement items" ON engagement_items
   FOR INSERT WITH CHECK (
     brand_id IN (
@@ -106,6 +108,7 @@ CREATE POLICY "Users can insert their brand's engagement items" ON engagement_it
     )
   );
 
+DROP POLICY IF EXISTS "Users can update their brand's engagement items" ON engagement_items;
 CREATE POLICY "Users can update their brand's engagement items" ON engagement_items
   FOR UPDATE USING (
     brand_id IN (
@@ -113,6 +116,7 @@ CREATE POLICY "Users can update their brand's engagement items" ON engagement_it
     )
   );
 
+DROP POLICY IF EXISTS "Users can view their brand's engagement responses" ON engagement_responses;
 CREATE POLICY "Users can view their brand's engagement responses" ON engagement_responses
   FOR SELECT USING (
     brand_id IN (
@@ -120,6 +124,7 @@ CREATE POLICY "Users can view their brand's engagement responses" ON engagement_
     )
   );
 
+DROP POLICY IF EXISTS "Users can manage their brand's engagement responses" ON engagement_responses;
 CREATE POLICY "Users can manage their brand's engagement responses" ON engagement_responses
   FOR ALL USING (
     brand_id IN (
@@ -127,6 +132,7 @@ CREATE POLICY "Users can manage their brand's engagement responses" ON engagemen
     )
   );
 
+DROP POLICY IF EXISTS "Users can manage their brand's engagement rules" ON engagement_rules;
 CREATE POLICY "Users can manage their brand's engagement rules" ON engagement_rules
   FOR ALL USING (
     brand_id IN (
@@ -134,6 +140,7 @@ CREATE POLICY "Users can manage their brand's engagement rules" ON engagement_ru
     )
   );
 
+DROP POLICY IF EXISTS "Users can view their brand's engagement analytics" ON engagement_analytics;
 CREATE POLICY "Users can view their brand's engagement analytics" ON engagement_analytics
   FOR SELECT USING (
     brand_id IN (

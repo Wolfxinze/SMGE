@@ -43,7 +43,7 @@ CREATE TABLE public.subscription_plans (
 );
 
 -- Create index for active plans
-CREATE INDEX idx_subscription_plans_active ON public.subscription_plans(is_active, display_order);
+CREATE INDEX IF NOT EXISTS idx_subscription_plans_active ON public.subscription_plans(is_active, display_order);
 
 -- Add comment
 COMMENT ON TABLE public.subscription_plans IS 'Static reference data for available subscription tiers and their feature limits';
@@ -93,11 +93,11 @@ CREATE TABLE public.subscriptions (
 );
 
 -- Create indexes
-CREATE INDEX idx_subscriptions_user_id ON public.subscriptions(user_id);
-CREATE INDEX idx_subscriptions_stripe_customer ON public.subscriptions(stripe_customer_id);
-CREATE INDEX idx_subscriptions_stripe_subscription ON public.subscriptions(stripe_subscription_id);
-CREATE INDEX idx_subscriptions_status ON public.subscriptions(status);
-CREATE INDEX idx_subscriptions_period_end ON public.subscriptions(current_period_end);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON public.subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_customer ON public.subscriptions(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_subscription ON public.subscriptions(stripe_subscription_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON public.subscriptions(status);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_period_end ON public.subscriptions(current_period_end);
 
 -- Add comment
 COMMENT ON TABLE public.subscriptions IS 'User subscription state synced from Stripe webhooks';
@@ -146,9 +146,9 @@ CREATE TABLE public.usage_metrics (
 );
 
 -- Create indexes
-CREATE INDEX idx_usage_metrics_user_id ON public.usage_metrics(user_id);
-CREATE INDEX idx_usage_metrics_period ON public.usage_metrics(period_start, period_end);
-CREATE INDEX idx_usage_metrics_subscription_id ON public.usage_metrics(subscription_id);
+CREATE INDEX IF NOT EXISTS idx_usage_metrics_user_id ON public.usage_metrics(user_id);
+CREATE INDEX IF NOT EXISTS idx_usage_metrics_period ON public.usage_metrics(period_start, period_end);
+CREATE INDEX IF NOT EXISTS idx_usage_metrics_subscription_id ON public.usage_metrics(subscription_id);
 
 -- Add comment
 COMMENT ON TABLE public.usage_metrics IS 'Monthly usage tracking for enforcing subscription plan limits';
@@ -200,10 +200,10 @@ CREATE TABLE public.invoices (
 );
 
 -- Create indexes
-CREATE INDEX idx_invoices_user_id ON public.invoices(user_id);
-CREATE INDEX idx_invoices_stripe_invoice ON public.invoices(stripe_invoice_id);
-CREATE INDEX idx_invoices_status ON public.invoices(status);
-CREATE INDEX idx_invoices_period ON public.invoices(period_start, period_end);
+CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON public.invoices(user_id);
+CREATE INDEX IF NOT EXISTS idx_invoices_stripe_invoice ON public.invoices(stripe_invoice_id);
+CREATE INDEX IF NOT EXISTS idx_invoices_status ON public.invoices(status);
+CREATE INDEX IF NOT EXISTS idx_invoices_period ON public.invoices(period_start, period_end);
 
 -- Add comment
 COMMENT ON TABLE public.invoices IS 'Billing invoice history synced from Stripe';
@@ -238,10 +238,10 @@ CREATE TABLE public.webhook_events (
 );
 
 -- Create indexes
-CREATE INDEX idx_webhook_events_stripe_event ON public.webhook_events(stripe_event_id);
-CREATE INDEX idx_webhook_events_type ON public.webhook_events(event_type);
-CREATE INDEX idx_webhook_events_processed ON public.webhook_events(processed);
-CREATE INDEX idx_webhook_events_created ON public.webhook_events(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_stripe_event ON public.webhook_events(stripe_event_id);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_type ON public.webhook_events(event_type);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_processed ON public.webhook_events(processed);
+CREATE INDEX IF NOT EXISTS idx_webhook_events_created ON public.webhook_events(created_at DESC);
 
 -- Add comment
 COMMENT ON TABLE public.webhook_events IS 'Stripe webhook events for idempotent processing and audit trail';
@@ -262,11 +262,13 @@ ALTER TABLE public.webhook_events ENABLE ROW LEVEL SECURITY;
 -- ===================
 
 -- Anyone can view active subscription plans
+DROP POLICY IF EXISTS "Anyone can view active plans" ON public.subscription_plans;
 CREATE POLICY "Anyone can view active plans"
     ON public.subscription_plans FOR SELECT
     USING (is_active = true);
 
 -- Only service role can manage plans
+DROP POLICY IF EXISTS "Service role can manage plans" ON public.subscription_plans;
 CREATE POLICY "Service role can manage plans"
     ON public.subscription_plans FOR ALL
     TO service_role
@@ -277,11 +279,13 @@ CREATE POLICY "Service role can manage plans"
 -- ===================
 
 -- Users can view their own subscriptions
+DROP POLICY IF EXISTS "Users can view own subscriptions" ON public.subscriptions;
 CREATE POLICY "Users can view own subscriptions"
     ON public.subscriptions FOR SELECT
     USING (auth.uid() = user_id);
 
 -- Service role can manage all subscriptions (for Stripe webhooks)
+DROP POLICY IF EXISTS "Service role can manage all subscriptions" ON public.subscriptions;
 CREATE POLICY "Service role can manage all subscriptions"
     ON public.subscriptions FOR ALL
     TO service_role
@@ -292,11 +296,13 @@ CREATE POLICY "Service role can manage all subscriptions"
 -- ===================
 
 -- Users can view their own usage metrics
+DROP POLICY IF EXISTS "Users can view own usage metrics" ON public.usage_metrics;
 CREATE POLICY "Users can view own usage metrics"
     ON public.usage_metrics FOR SELECT
     USING (auth.uid() = user_id);
 
 -- Service role can manage all usage metrics
+DROP POLICY IF EXISTS "Service role can manage usage metrics" ON public.usage_metrics;
 CREATE POLICY "Service role can manage usage metrics"
     ON public.usage_metrics FOR ALL
     TO service_role
@@ -307,11 +313,13 @@ CREATE POLICY "Service role can manage usage metrics"
 -- ===================
 
 -- Users can view their own invoices
+DROP POLICY IF EXISTS "Users can view own invoices" ON public.invoices;
 CREATE POLICY "Users can view own invoices"
     ON public.invoices FOR SELECT
     USING (auth.uid() = user_id);
 
 -- Service role can manage all invoices
+DROP POLICY IF EXISTS "Service role can manage invoices" ON public.invoices;
 CREATE POLICY "Service role can manage invoices"
     ON public.invoices FOR ALL
     TO service_role
@@ -322,6 +330,7 @@ CREATE POLICY "Service role can manage invoices"
 -- ===================
 
 -- Only service role can access webhook events
+DROP POLICY IF EXISTS "Service role can manage webhook events" ON public.webhook_events;
 CREATE POLICY "Service role can manage webhook events"
     ON public.webhook_events FOR ALL
     TO service_role
@@ -514,6 +523,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger to sync subscription changes to profile
+DROP TRIGGER IF EXISTS sync_subscription_to_profile_trigger ON public.subscriptions;
 CREATE TRIGGER sync_subscription_to_profile_trigger
     AFTER INSERT OR UPDATE OF plan_id, status ON public.subscriptions
     FOR EACH ROW
@@ -524,22 +534,27 @@ CREATE TRIGGER sync_subscription_to_profile_trigger
 -- TRIGGERS FOR UPDATED_AT
 -- ============================================================================
 
+DROP TRIGGER IF EXISTS update_subscription_plans_updated_at ON public.subscription_plans;
 CREATE TRIGGER update_subscription_plans_updated_at
     BEFORE UPDATE ON public.subscription_plans
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_subscriptions_updated_at ON public.subscriptions;
 CREATE TRIGGER update_subscriptions_updated_at
     BEFORE UPDATE ON public.subscriptions
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_usage_metrics_updated_at ON public.usage_metrics;
 CREATE TRIGGER update_usage_metrics_updated_at
     BEFORE UPDATE ON public.usage_metrics
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_invoices_updated_at ON public.invoices;
 CREATE TRIGGER update_invoices_updated_at
     BEFORE UPDATE ON public.invoices
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_webhook_events_updated_at ON public.webhook_events;
 CREATE TRIGGER update_webhook_events_updated_at
     BEFORE UPDATE ON public.webhook_events
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();

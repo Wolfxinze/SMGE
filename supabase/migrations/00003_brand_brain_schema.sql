@@ -46,8 +46,8 @@ CREATE TABLE public.brands (
 );
 
 -- Create index for user lookups
-CREATE INDEX idx_brands_user_id ON public.brands(user_id);
-CREATE INDEX idx_brands_is_active ON public.brands(is_active);
+CREATE INDEX IF NOT EXISTS idx_brands_user_id ON public.brands(user_id);
+CREATE INDEX IF NOT EXISTS idx_brands_is_active ON public.brands(is_active);
 
 -- Add comment
 COMMENT ON TABLE public.brands IS 'Core brand information including mission, vision, values, and business context';
@@ -92,12 +92,12 @@ CREATE TABLE public.brand_voice (
 );
 
 -- Create vector similarity search index
-CREATE INDEX idx_brand_voice_embedding ON public.brand_voice
+CREATE INDEX IF NOT EXISTS idx_brand_voice_embedding ON public.brand_voice
     USING ivfflat (voice_embedding vector_cosine_ops)
     WITH (lists = 100);
 
 -- Create standard indexes
-CREATE INDEX idx_brand_voice_brand_id ON public.brand_voice(brand_id);
+CREATE INDEX IF NOT EXISTS idx_brand_voice_brand_id ON public.brand_voice(brand_id);
 
 -- Add comment
 COMMENT ON TABLE public.brand_voice IS 'Brand voice characteristics, tone, and communication style with AI embeddings';
@@ -140,8 +140,8 @@ CREATE TABLE public.target_audiences (
 );
 
 -- Create indexes
-CREATE INDEX idx_target_audiences_brand_id ON public.target_audiences(brand_id);
-CREATE INDEX idx_target_audiences_is_primary ON public.target_audiences(is_primary);
+CREATE INDEX IF NOT EXISTS idx_target_audiences_brand_id ON public.target_audiences(brand_id);
+CREATE INDEX IF NOT EXISTS idx_target_audiences_is_primary ON public.target_audiences(is_primary);
 
 -- Add comment
 COMMENT ON TABLE public.target_audiences IS 'Detailed audience personas including demographics, psychographics, and behavioral patterns';
@@ -187,15 +187,15 @@ CREATE TABLE public.brand_content_examples (
 );
 
 -- Create vector similarity search index
-CREATE INDEX idx_brand_content_examples_embedding ON public.brand_content_examples
+CREATE INDEX IF NOT EXISTS idx_brand_content_examples_embedding ON public.brand_content_examples
     USING ivfflat (embedding vector_cosine_ops)
     WITH (lists = 100);
 
 -- Create standard indexes
-CREATE INDEX idx_brand_content_examples_brand_id ON public.brand_content_examples(brand_id);
-CREATE INDEX idx_brand_content_examples_content_type ON public.brand_content_examples(content_type);
-CREATE INDEX idx_brand_content_examples_platform ON public.brand_content_examples(platform);
-CREATE INDEX idx_brand_content_examples_is_top_performer ON public.brand_content_examples(is_top_performer);
+CREATE INDEX IF NOT EXISTS idx_brand_content_examples_brand_id ON public.brand_content_examples(brand_id);
+CREATE INDEX IF NOT EXISTS idx_brand_content_examples_content_type ON public.brand_content_examples(content_type);
+CREATE INDEX IF NOT EXISTS idx_brand_content_examples_platform ON public.brand_content_examples(platform);
+CREATE INDEX IF NOT EXISTS idx_brand_content_examples_is_top_performer ON public.brand_content_examples(is_top_performer);
 
 -- Add comment
 COMMENT ON TABLE public.brand_content_examples IS 'Example content representing brand voice and style with AI embeddings for similarity matching';
@@ -245,7 +245,7 @@ CREATE TABLE public.brand_guidelines (
 );
 
 -- Create indexes
-CREATE INDEX idx_brand_guidelines_brand_id ON public.brand_guidelines(brand_id);
+CREATE INDEX IF NOT EXISTS idx_brand_guidelines_brand_id ON public.brand_guidelines(brand_id);
 
 -- Add comment
 COMMENT ON TABLE public.brand_guidelines IS 'Visual identity, content rules, and platform-specific guidelines';
@@ -266,22 +266,26 @@ ALTER TABLE public.brand_guidelines ENABLE ROW LEVEL SECURITY;
 -- ===================
 
 -- Users can view their own brands
+DROP POLICY IF EXISTS "Users can view own brands" ON public.brands;
 CREATE POLICY "Users can view own brands"
     ON public.brands FOR SELECT
     USING (auth.uid() = user_id);
 
 -- Users can create their own brands
+DROP POLICY IF EXISTS "Users can create own brands" ON public.brands;
 CREATE POLICY "Users can create own brands"
     ON public.brands FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
 -- Users can update their own brands
+DROP POLICY IF EXISTS "Users can update own brands" ON public.brands;
 CREATE POLICY "Users can update own brands"
     ON public.brands FOR UPDATE
     USING (auth.uid() = user_id)
     WITH CHECK (auth.uid() = user_id);
 
 -- Users can delete their own brands
+DROP POLICY IF EXISTS "Users can delete own brands" ON public.brands;
 CREATE POLICY "Users can delete own brands"
     ON public.brands FOR DELETE
     USING (auth.uid() = user_id);
@@ -291,6 +295,7 @@ CREATE POLICY "Users can delete own brands"
 -- ===================
 
 -- Users can view voice profiles for their brands
+DROP POLICY IF EXISTS "Users can view own brand voice" ON public.brand_voice;
 CREATE POLICY "Users can view own brand voice"
     ON public.brand_voice FOR SELECT
     USING (
@@ -302,6 +307,7 @@ CREATE POLICY "Users can view own brand voice"
     );
 
 -- Users can create voice profiles for their brands
+DROP POLICY IF EXISTS "Users can create own brand voice" ON public.brand_voice;
 CREATE POLICY "Users can create own brand voice"
     ON public.brand_voice FOR INSERT
     WITH CHECK (
@@ -313,6 +319,7 @@ CREATE POLICY "Users can create own brand voice"
     );
 
 -- Users can update voice profiles for their brands
+DROP POLICY IF EXISTS "Users can update own brand voice" ON public.brand_voice;
 CREATE POLICY "Users can update own brand voice"
     ON public.brand_voice FOR UPDATE
     USING (
@@ -331,6 +338,7 @@ CREATE POLICY "Users can update own brand voice"
     );
 
 -- Users can delete voice profiles for their brands
+DROP POLICY IF EXISTS "Users can delete own brand voice" ON public.brand_voice;
 CREATE POLICY "Users can delete own brand voice"
     ON public.brand_voice FOR DELETE
     USING (
@@ -346,6 +354,7 @@ CREATE POLICY "Users can delete own brand voice"
 -- ===================
 
 -- Users can view audiences for their brands
+DROP POLICY IF EXISTS "Users can view own brand audiences" ON public.target_audiences;
 CREATE POLICY "Users can view own brand audiences"
     ON public.target_audiences FOR SELECT
     USING (
@@ -357,6 +366,7 @@ CREATE POLICY "Users can view own brand audiences"
     );
 
 -- Users can create audiences for their brands
+DROP POLICY IF EXISTS "Users can create own brand audiences" ON public.target_audiences;
 CREATE POLICY "Users can create own brand audiences"
     ON public.target_audiences FOR INSERT
     WITH CHECK (
@@ -368,6 +378,7 @@ CREATE POLICY "Users can create own brand audiences"
     );
 
 -- Users can update audiences for their brands
+DROP POLICY IF EXISTS "Users can update own brand audiences" ON public.target_audiences;
 CREATE POLICY "Users can update own brand audiences"
     ON public.target_audiences FOR UPDATE
     USING (
@@ -386,6 +397,7 @@ CREATE POLICY "Users can update own brand audiences"
     );
 
 -- Users can delete audiences for their brands
+DROP POLICY IF EXISTS "Users can delete own brand audiences" ON public.target_audiences;
 CREATE POLICY "Users can delete own brand audiences"
     ON public.target_audiences FOR DELETE
     USING (
@@ -401,6 +413,7 @@ CREATE POLICY "Users can delete own brand audiences"
 -- ===================
 
 -- Users can view content examples for their brands
+DROP POLICY IF EXISTS "Users can view own brand content examples" ON public.brand_content_examples;
 CREATE POLICY "Users can view own brand content examples"
     ON public.brand_content_examples FOR SELECT
     USING (
@@ -412,6 +425,7 @@ CREATE POLICY "Users can view own brand content examples"
     );
 
 -- Users can create content examples for their brands
+DROP POLICY IF EXISTS "Users can create own brand content examples" ON public.brand_content_examples;
 CREATE POLICY "Users can create own brand content examples"
     ON public.brand_content_examples FOR INSERT
     WITH CHECK (
@@ -423,6 +437,7 @@ CREATE POLICY "Users can create own brand content examples"
     );
 
 -- Users can update content examples for their brands
+DROP POLICY IF EXISTS "Users can update own brand content examples" ON public.brand_content_examples;
 CREATE POLICY "Users can update own brand content examples"
     ON public.brand_content_examples FOR UPDATE
     USING (
@@ -441,6 +456,7 @@ CREATE POLICY "Users can update own brand content examples"
     );
 
 -- Users can delete content examples for their brands
+DROP POLICY IF EXISTS "Users can delete own brand content examples" ON public.brand_content_examples;
 CREATE POLICY "Users can delete own brand content examples"
     ON public.brand_content_examples FOR DELETE
     USING (
@@ -456,6 +472,7 @@ CREATE POLICY "Users can delete own brand content examples"
 -- ===================
 
 -- Users can view guidelines for their brands
+DROP POLICY IF EXISTS "Users can view own brand guidelines" ON public.brand_guidelines;
 CREATE POLICY "Users can view own brand guidelines"
     ON public.brand_guidelines FOR SELECT
     USING (
@@ -467,6 +484,7 @@ CREATE POLICY "Users can view own brand guidelines"
     );
 
 -- Users can create guidelines for their brands
+DROP POLICY IF EXISTS "Users can create own brand guidelines" ON public.brand_guidelines;
 CREATE POLICY "Users can create own brand guidelines"
     ON public.brand_guidelines FOR INSERT
     WITH CHECK (
@@ -478,6 +496,7 @@ CREATE POLICY "Users can create own brand guidelines"
     );
 
 -- Users can update guidelines for their brands
+DROP POLICY IF EXISTS "Users can update own brand guidelines" ON public.brand_guidelines;
 CREATE POLICY "Users can update own brand guidelines"
     ON public.brand_guidelines FOR UPDATE
     USING (
@@ -496,6 +515,7 @@ CREATE POLICY "Users can update own brand guidelines"
     );
 
 -- Users can delete guidelines for their brands
+DROP POLICY IF EXISTS "Users can delete own brand guidelines" ON public.brand_guidelines;
 CREATE POLICY "Users can delete own brand guidelines"
     ON public.brand_guidelines FOR DELETE
     USING (
@@ -650,18 +670,23 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Add triggers to all tables
+DROP TRIGGER IF EXISTS update_brands_updated_at ON public.brands;
 CREATE TRIGGER update_brands_updated_at BEFORE UPDATE ON public.brands
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_brand_voice_updated_at ON public.brand_voice;
 CREATE TRIGGER update_brand_voice_updated_at BEFORE UPDATE ON public.brand_voice
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_target_audiences_updated_at ON public.target_audiences;
 CREATE TRIGGER update_target_audiences_updated_at BEFORE UPDATE ON public.target_audiences
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_brand_content_examples_updated_at ON public.brand_content_examples;
 CREATE TRIGGER update_brand_content_examples_updated_at BEFORE UPDATE ON public.brand_content_examples
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_brand_guidelines_updated_at ON public.brand_guidelines;
 CREATE TRIGGER update_brand_guidelines_updated_at BEFORE UPDATE ON public.brand_guidelines
     FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
