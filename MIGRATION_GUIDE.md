@@ -187,8 +187,30 @@ Expected tables after all migrations:
 
 After all migrations are applied, generate TypeScript types:
 
+**Option 1: Using Supabase CLI (Recommended)**
 ```bash
-# This will work once migrations are applied
+# Login to Supabase CLI first (one-time setup)
+supabase login
+
+# Generate types from your database schema
+mkdir -p lib/db
+supabase gen types typescript --project-id orharllggjmfsalcshpu > lib/db/types.ts
+```
+
+**Option 2: Using Supabase Dashboard**
+1. Go to: https://app.supabase.com/project/orharllggjmfsalcshpu/api
+2. Scroll to "Generated Types" section
+3. Click "Generate Types"
+4. Copy the generated TypeScript code
+5. Create `lib/db/types.ts` and paste the code
+
+**Option 3: Using Access Token**
+```bash
+# Set access token from https://app.supabase.com/account/tokens
+export SUPABASE_ACCESS_TOKEN='your-access-token'
+
+# Generate types
+mkdir -p lib/db
 supabase gen types typescript --project-id orharllggjmfsalcshpu > lib/db/types.ts
 ```
 
