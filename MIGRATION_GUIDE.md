@@ -204,6 +204,41 @@ This will resolve the ~90 TypeScript errors in the codebase.
 3. If it's a syntax error, check the SQL file for issues
 4. Contact support if blocked
 
+### Common Error: "must be owner of relation users"
+
+**Error Example:**
+```
+ERROR: 42501: must be owner of relation users
+```
+
+**Root Cause:**
+- Migration attempts to create trigger on `auth.users` table
+- Supabase auth schema is system-managed and cannot be modified
+- You don't have ownership permissions on `auth.users`
+
+**Solution:**
+- Use `public.profiles` table instead (you own this)
+- Profiles are auto-created via trigger from migration 00002
+- Free tier initialization triggers on profile creation, not user creation
+
+**Example:**
+```sql
+-- ❌ WRONG - Cannot create trigger on auth.users
+CREATE TRIGGER my_trigger
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION my_function();
+
+-- ✅ CORRECT - Create trigger on public.profiles
+CREATE TRIGGER my_trigger
+  AFTER INSERT ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION my_function();
+```
+
+**Fix Applied:**
+- Commit e4e4f5e fixed migration 00011 to use profiles trigger
+
+---
+
 ### Common Error: "column X does not exist" during CREATE TABLE
 
 **Error Example:**
