@@ -6,7 +6,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface QueueItem {
   engagement_id: string;
@@ -30,7 +29,6 @@ interface Analytics {
 }
 
 export default function EngagementPage() {
-  const router = useRouter();
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [selectedBrandId, setSelectedBrandId] = useState<string>('');
