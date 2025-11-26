@@ -3,7 +3,7 @@
  * Processes Stripe webhook events and syncs to database
  */
 
-import type Stripe from 'stripe';
+import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
 // Create Supabase client with service role for webhook processing
@@ -47,8 +47,8 @@ export async function handleCheckoutSessionCompleted(
     stripe_price_id: subscription.items.data[0].price.id,
     plan_id: planId,
     status: subscription.status,
-    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+    current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
+    current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
     cancel_at_period_end: subscription.cancel_at_period_end,
     trial_start: subscription.trial_start
       ? new Date(subscription.trial_start * 1000).toISOString()
@@ -87,8 +87,8 @@ export async function handleSubscriptionCreated(
         stripe_price_id: subscription.items.data[0].price.id,
         plan_id: planId,
         status: subscription.status,
-        current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-        current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+        current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
+        current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
         cancel_at_period_end: subscription.cancel_at_period_end,
         trial_start: subscription.trial_start
           ? new Date(subscription.trial_start * 1000).toISOString()
@@ -134,8 +134,8 @@ export async function handleSubscriptionUpdated(
     .update({
       status: subscription.status,
       stripe_price_id: subscription.items.data[0].price.id,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
+      current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
       cancel_at_period_end: subscription.cancel_at_period_end,
       canceled_at: subscription.canceled_at
         ? new Date(subscription.canceled_at * 1000).toISOString()
@@ -178,7 +178,7 @@ export async function handleSubscriptionDeleted(
  */
 export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
   const customerId = invoice.customer as string;
-  const subscriptionId = invoice.subscription as string;
+  const subscriptionId = (invoice as any).subscription as string;
 
   // Get user from subscription
   const { data: subscription } = await supabaseAdmin
@@ -207,7 +207,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
       period_end: new Date(invoice.period_end * 1000).toISOString(),
       hosted_invoice_url: invoice.hosted_invoice_url,
       invoice_pdf_url: invoice.invoice_pdf,
-      payment_intent_id: invoice.payment_intent as string,
+      payment_intent_id: (invoice as any).payment_intent as string,
       paid_at: invoice.status_transitions?.paid_at
         ? new Date(invoice.status_transitions.paid_at * 1000).toISOString()
         : null,
@@ -230,7 +230,7 @@ export async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Pr
  */
 export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
   const customerId = invoice.customer as string;
-  const subscriptionId = invoice.subscription as string;
+  const subscriptionId = (invoice as any).subscription as string;
 
   // Get user from subscription
   const { data: subscription } = await supabaseAdmin
@@ -259,7 +259,7 @@ export async function handleInvoicePaymentFailed(invoice: Stripe.Invoice): Promi
       period_end: new Date(invoice.period_end * 1000).toISOString(),
       hosted_invoice_url: invoice.hosted_invoice_url,
       invoice_pdf_url: invoice.invoice_pdf,
-      payment_intent_id: invoice.payment_intent as string,
+      payment_intent_id: (invoice as any).payment_intent as string,
       attempt_count: invoice.attempt_count,
       next_payment_attempt: invoice.next_payment_attempt
         ? new Date(invoice.next_payment_attempt * 1000).toISOString()

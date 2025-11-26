@@ -55,6 +55,43 @@ export interface Database {
         }
       }
 
+      // Brands
+      brands: {
+        Row: {
+          id: string
+          user_id: string
+          created_at: string
+          updated_at: string
+          name: string
+          description: string | null
+          logo_url: string | null
+          website_url: string | null
+          is_active: boolean
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          created_at?: string
+          updated_at?: string
+          name: string
+          description?: string | null
+          logo_url?: string | null
+          website_url?: string | null
+          is_active?: boolean
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          created_at?: string
+          updated_at?: string
+          name?: string
+          description?: string | null
+          logo_url?: string | null
+          website_url?: string | null
+          is_active?: boolean
+        }
+      }
+
       // Brand Brain context store
       brand_context: {
         Row: {
@@ -254,6 +291,314 @@ export interface Database {
           created_at?: string
         }
       }
+
+      // Subscription plans
+      subscription_plans: {
+        Row: {
+          id: string
+          plan_id: 'free' | 'starter' | 'growth' | 'agency'
+          name: string
+          description: string | null
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          price_monthly_cents: number
+          price_yearly_cents: number | null
+          currency: string
+          limits: Json
+          is_active: boolean
+          display_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          plan_id: 'free' | 'starter' | 'growth' | 'agency'
+          name: string
+          description?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          price_monthly_cents: number
+          price_yearly_cents?: number | null
+          currency?: string
+          limits: Json
+          is_active?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          plan_id?: 'free' | 'starter' | 'growth' | 'agency'
+          name?: string
+          description?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          price_monthly_cents?: number
+          price_yearly_cents?: number | null
+          currency?: string
+          limits?: Json
+          is_active?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      // User subscriptions
+      subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_customer_id: string
+          stripe_subscription_id: string | null
+          stripe_price_id: string | null
+          plan_id: 'free' | 'starter' | 'growth' | 'agency'
+          status: string
+          current_period_start: string
+          current_period_end: string
+          cancel_at_period_end: boolean
+          canceled_at: string | null
+          trial_start: string | null
+          trial_end: string | null
+          latest_invoice_id: string | null
+          default_payment_method: string | null
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_customer_id: string
+          stripe_subscription_id?: string | null
+          stripe_price_id?: string | null
+          plan_id?: 'free' | 'starter' | 'growth' | 'agency'
+          status?: string
+          current_period_start?: string
+          current_period_end?: string
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          trial_start?: string | null
+          trial_end?: string | null
+          latest_invoice_id?: string | null
+          default_payment_method?: string | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string | null
+          stripe_price_id?: string | null
+          plan_id?: 'free' | 'starter' | 'growth' | 'agency'
+          status?: string
+          current_period_start?: string
+          current_period_end?: string
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          trial_start?: string | null
+          trial_end?: string | null
+          latest_invoice_id?: string | null
+          default_payment_method?: string | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      // Invoices
+      invoices: {
+        Row: {
+          id: string
+          user_id: string
+          subscription_id: string | null
+          stripe_invoice_id: string
+          stripe_customer_id: string
+          amount_due: number
+          amount_paid: number
+          currency: string
+          status: string
+          period_start: string
+          period_end: string
+          hosted_invoice_url: string | null
+          invoice_pdf_url: string | null
+          payment_intent_id: string | null
+          paid_at: string | null
+          attempt_count: number
+          next_payment_attempt: string | null
+          last_finalization_error: Json | null
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          subscription_id?: string | null
+          stripe_invoice_id: string
+          stripe_customer_id: string
+          amount_due: number
+          amount_paid: number
+          currency: string
+          status: string
+          period_start: string
+          period_end: string
+          hosted_invoice_url?: string | null
+          invoice_pdf_url?: string | null
+          payment_intent_id?: string | null
+          paid_at?: string | null
+          attempt_count?: number
+          next_payment_attempt?: string | null
+          last_finalization_error?: Json | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          subscription_id?: string | null
+          stripe_invoice_id?: string
+          stripe_customer_id?: string
+          amount_due?: number
+          amount_paid?: number
+          currency?: string
+          status?: string
+          period_start?: string
+          period_end?: string
+          hosted_invoice_url?: string | null
+          invoice_pdf_url?: string | null
+          payment_intent_id?: string | null
+          paid_at?: string | null
+          attempt_count?: number
+          next_payment_attempt?: string | null
+          last_finalization_error?: Json | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      // Webhook events
+      webhook_events: {
+        Row: {
+          id: string
+          stripe_event_id: string
+          event_type: string
+          event_data: Json
+          processed: boolean
+          processed_at: string | null
+          processing_attempts: number
+          error_message: string | null
+          error_stack: string | null
+          api_version: string | null
+          request_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          stripe_event_id: string
+          event_type: string
+          event_data: Json
+          processed?: boolean
+          processed_at?: string | null
+          processing_attempts?: number
+          error_message?: string | null
+          error_stack?: string | null
+          api_version?: string | null
+          request_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          stripe_event_id?: string
+          event_type?: string
+          event_data?: Json
+          processed?: boolean
+          processed_at?: string | null
+          processing_attempts?: number
+          error_message?: string | null
+          error_stack?: string | null
+          api_version?: string | null
+          request_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      // Usage metrics
+      usage_metrics: {
+        Row: {
+          id: string
+          user_id: string
+          subscription_id: string | null
+          period_start: string
+          period_end: string
+          posts_created: number
+          posts_scheduled: number
+          posts_published: number
+          ai_credits_consumed: number
+          ai_image_generations: number
+          ai_content_generations: number
+          brands_created: number
+          social_accounts_connected: number
+          storage_bytes: number
+          media_files_count: number
+          api_calls: number
+          webhook_calls: number
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          subscription_id?: string | null
+          period_start: string
+          period_end: string
+          posts_created?: number
+          posts_scheduled?: number
+          posts_published?: number
+          ai_credits_consumed?: number
+          ai_image_generations?: number
+          ai_content_generations?: number
+          brands_created?: number
+          social_accounts_connected?: number
+          storage_bytes?: number
+          media_files_count?: number
+          api_calls?: number
+          webhook_calls?: number
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          subscription_id?: string | null
+          period_start?: string
+          period_end?: string
+          posts_created?: number
+          posts_scheduled?: number
+          posts_published?: number
+          ai_credits_consumed?: number
+          ai_image_generations?: number
+          ai_content_generations?: number
+          brands_created?: number
+          social_accounts_connected?: number
+          storage_bytes?: number
+          media_files_count?: number
+          api_calls?: number
+          webhook_calls?: number
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
 
     Views: {
@@ -261,7 +606,38 @@ export interface Database {
     }
 
     Functions: {
-      // Add database functions here as needed
+      // Check if user can perform an action based on usage limits
+      check_usage_allowed: {
+        Args: {
+          p_user_id: string
+          p_action: string
+        }
+        Returns: {
+          allowed: boolean
+          current_usage: number
+          limit: number
+          percentage_used: number
+          message: string
+        }[]
+      }
+      // Get subscription plan limits for a user
+      get_subscription_limits: {
+        Args: {
+          p_user_id: string
+        }
+        Returns: {
+          limits: Json
+        }[]
+      }
+      // Update usage metrics
+      update_usage_metric: {
+        Args: {
+          p_user_id: string
+          p_metric: string
+          p_amount: number
+        }
+        Returns: void
+      }
     }
 
     Enums: {
