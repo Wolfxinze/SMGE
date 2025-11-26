@@ -6,7 +6,7 @@
 -- ============================================================================
 -- ENGAGEMENT_ITEMS TABLE - Incoming comments/DMs to respond to
 -- ============================================================================
-CREATE TABLE public.engagement_items (
+CREATE TABLE IF NOT EXISTS public.engagement_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     brand_id UUID NOT NULL REFERENCES public.brands(id) ON DELETE CASCADE,
 
@@ -69,7 +69,7 @@ COMMENT ON TABLE public.engagement_items IS 'Incoming social media comments and 
 -- ============================================================================
 -- GENERATED_RESPONSES TABLE - AI-generated replies awaiting approval
 -- ============================================================================
-CREATE TABLE public.generated_responses (
+CREATE TABLE IF NOT EXISTS public.generated_responses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     engagement_item_id UUID NOT NULL REFERENCES public.engagement_items(id) ON DELETE CASCADE,
     brand_id UUID NOT NULL REFERENCES public.brands(id) ON DELETE CASCADE,
@@ -127,7 +127,7 @@ COMMENT ON TABLE public.generated_responses IS 'AI-generated responses with appr
 -- ============================================================================
 -- ENGAGEMENT_HISTORY TABLE - Posted responses with performance tracking
 -- ============================================================================
-CREATE TABLE public.engagement_history (
+CREATE TABLE IF NOT EXISTS public.engagement_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     engagement_item_id UUID NOT NULL REFERENCES public.engagement_items(id) ON DELETE CASCADE,
     generated_response_id UUID NOT NULL REFERENCES public.generated_responses(id) ON DELETE CASCADE,
@@ -178,7 +178,7 @@ COMMENT ON TABLE public.engagement_history IS 'Historical record of posted respo
 -- ============================================================================
 -- ENGAGEMENT_RULES TABLE - Auto-response and filtering rules
 -- ============================================================================
-CREATE TABLE public.engagement_rules (
+CREATE TABLE IF NOT EXISTS public.engagement_rules (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     brand_id UUID NOT NULL REFERENCES public.brands(id) ON DELETE CASCADE,
 
