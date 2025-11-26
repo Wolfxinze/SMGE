@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS public.brands (
 ALTER TABLE public.brands ENABLE ROW LEVEL SECURITY;
 
 -- Brands policies
+DROP POLICY IF EXISTS "Users can manage own brands" ON public.brands;
 CREATE POLICY "Users can manage own brands"
     ON public.brands
     FOR ALL
@@ -36,8 +37,8 @@ CREATE POLICY "Users can manage own brands"
     WITH CHECK (auth.uid() = user_id);
 
 -- Create index for brands
-CREATE INDEX idx_brands_user_id ON public.brands(user_id);
-CREATE INDEX idx_brands_active ON public.brands(is_active) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_brands_user_id ON public.brands(user_id);
+CREATE INDEX IF NOT EXISTS idx_brands_active ON public.brands(is_active) WHERE is_active = TRUE;
 
 -- ============================================================================
 -- POST TEMPLATES TABLE
@@ -204,30 +205,30 @@ CREATE TABLE IF NOT EXISTS public.content_pillars (
 -- ============================================================================
 
 -- Post templates indexes
-CREATE INDEX idx_post_templates_user_id ON public.post_templates(user_id);
-CREATE INDEX idx_post_templates_platform ON public.post_templates(platform) WHERE is_active = TRUE;
-CREATE INDEX idx_post_templates_content_type ON public.post_templates(content_type);
+CREATE INDEX IF NOT EXISTS idx_post_templates_user_id ON public.post_templates(user_id);
+CREATE INDEX IF NOT EXISTS idx_post_templates_platform ON public.post_templates(platform) WHERE is_active = TRUE;
+CREATE INDEX IF NOT EXISTS idx_post_templates_content_type ON public.post_templates(content_type);
 
 -- Generated posts indexes
-CREATE INDEX idx_generated_posts_user_id ON public.generated_posts(user_id);
-CREATE INDEX idx_generated_posts_brand_id ON public.generated_posts(brand_id) WHERE brand_id IS NOT NULL;
-CREATE INDEX idx_generated_posts_status ON public.generated_posts(status);
-CREATE INDEX idx_generated_posts_scheduled ON public.generated_posts(scheduled_at) WHERE status = 'scheduled';
-CREATE INDEX idx_generated_posts_created ON public.generated_posts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_generated_posts_user_id ON public.generated_posts(user_id);
+CREATE INDEX IF NOT EXISTS idx_generated_posts_brand_id ON public.generated_posts(brand_id) WHERE brand_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_generated_posts_status ON public.generated_posts(status);
+CREATE INDEX IF NOT EXISTS idx_generated_posts_scheduled ON public.generated_posts(scheduled_at) WHERE status = 'scheduled';
+CREATE INDEX IF NOT EXISTS idx_generated_posts_created ON public.generated_posts(created_at DESC);
 
 -- Generation history indexes
-CREATE INDEX idx_generation_history_user_id ON public.generation_history(user_id);
-CREATE INDEX idx_generation_history_post_id ON public.generation_history(post_id) WHERE post_id IS NOT NULL;
-CREATE INDEX idx_generation_history_status ON public.generation_history(status);
-CREATE INDEX idx_generation_history_created ON public.generation_history(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_generation_history_user_id ON public.generation_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_generation_history_post_id ON public.generation_history(post_id) WHERE post_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_generation_history_status ON public.generation_history(status);
+CREATE INDEX IF NOT EXISTS idx_generation_history_created ON public.generation_history(created_at DESC);
 
 -- Post media indexes
-CREATE INDEX idx_post_media_post_id ON public.post_media(post_id);
-CREATE INDEX idx_post_media_user_id ON public.post_media(user_id);
+CREATE INDEX IF NOT EXISTS idx_post_media_post_id ON public.post_media(post_id);
+CREATE INDEX IF NOT EXISTS idx_post_media_user_id ON public.post_media(user_id);
 
 -- Content pillars indexes
-CREATE INDEX idx_content_pillars_user_id ON public.content_pillars(user_id);
-CREATE INDEX idx_content_pillars_brand_id ON public.content_pillars(brand_id) WHERE brand_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_content_pillars_user_id ON public.content_pillars(user_id);
+CREATE INDEX IF NOT EXISTS idx_content_pillars_brand_id ON public.content_pillars(brand_id) WHERE brand_id IS NOT NULL;
 
 -- ============================================================================
 -- ROW LEVEL SECURITY (RLS)
@@ -241,6 +242,7 @@ ALTER TABLE public.post_media ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.content_pillars ENABLE ROW LEVEL SECURITY;
 
 -- Post templates policies
+DROP POLICY IF EXISTS "Users can manage own post templates" ON public.post_templates;
 CREATE POLICY "Users can manage own post templates"
     ON public.post_templates
     FOR ALL
@@ -249,6 +251,7 @@ CREATE POLICY "Users can manage own post templates"
     WITH CHECK (auth.uid() = user_id);
 
 -- Generated posts policies
+DROP POLICY IF EXISTS "Users can manage own generated posts" ON public.generated_posts;
 CREATE POLICY "Users can manage own generated posts"
     ON public.generated_posts
     FOR ALL
@@ -257,12 +260,14 @@ CREATE POLICY "Users can manage own generated posts"
     WITH CHECK (auth.uid() = user_id);
 
 -- Generation history policies
+DROP POLICY IF EXISTS "Users can view own generation history" ON public.generation_history;
 CREATE POLICY "Users can view own generation history"
     ON public.generation_history
     FOR SELECT
     TO authenticated
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Service role can insert generation history" ON public.generation_history;
 CREATE POLICY "Service role can insert generation history"
     ON public.generation_history
     FOR INSERT
@@ -270,6 +275,7 @@ CREATE POLICY "Service role can insert generation history"
     WITH CHECK (auth.uid() = user_id);
 
 -- Post media policies
+DROP POLICY IF EXISTS "Users can manage own post media" ON public.post_media;
 CREATE POLICY "Users can manage own post media"
     ON public.post_media
     FOR ALL
@@ -278,6 +284,7 @@ CREATE POLICY "Users can manage own post media"
     WITH CHECK (auth.uid() = user_id);
 
 -- Content pillars policies
+DROP POLICY IF EXISTS "Users can manage own content pillars" ON public.content_pillars;
 CREATE POLICY "Users can manage own content pillars"
     ON public.content_pillars
     FOR ALL
@@ -299,16 +306,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Triggers for updated_at
+DROP TRIGGER IF EXISTS update_post_templates_timestamp ON public.post_templates;
 CREATE TRIGGER update_post_templates_timestamp
     BEFORE UPDATE ON public.post_templates
     FOR EACH ROW
     EXECUTE FUNCTION public.update_post_generator_timestamp();
 
+DROP TRIGGER IF EXISTS update_generated_posts_timestamp ON public.generated_posts;
 CREATE TRIGGER update_generated_posts_timestamp
     BEFORE UPDATE ON public.generated_posts
     FOR EACH ROW
     EXECUTE FUNCTION public.update_post_generator_timestamp();
 
+DROP TRIGGER IF EXISTS update_content_pillars_timestamp ON public.content_pillars;
 CREATE TRIGGER update_content_pillars_timestamp
     BEFORE UPDATE ON public.content_pillars
     FOR EACH ROW
@@ -337,6 +347,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to track edits
+DROP TRIGGER IF EXISTS track_generated_post_edits ON public.generated_posts;
 CREATE TRIGGER track_generated_post_edits
     BEFORE UPDATE ON public.generated_posts
     FOR EACH ROW
