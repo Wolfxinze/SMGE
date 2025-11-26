@@ -204,18 +204,50 @@ This will resolve the ~90 TypeScript errors in the codebase.
 3. If it's a syntax error, check the SQL file for issues
 4. Contact support if blocked
 
+### Common Error: "column X does not exist" during CREATE TABLE
+
+**Error Example:**
+```
+ERROR: 42703: column "social_account_id" does not exist
+```
+
+**Root Cause:**
+- Migration was previously run partially, creating tables with incomplete schema
+- When re-running with `CREATE TABLE IF NOT EXISTS`, PostgreSQL skips table creation
+- But then tries to validate foreign key constraints on columns that don't exist in the partial table
+
+**Solution:**
+- Migration 00008 uses `DROP TABLE IF EXISTS CASCADE` before `CREATE TABLE`
+- This ensures tables are always created with correct schema
+- Other affected migrations may need the same pattern
+
+**How to identify:**
+1. Error says "column does not exist" during CREATE TABLE (not during INSERT/UPDATE)
+2. Table already exists from previous partial migration
+3. Run diagnostic: `SELECT * FROM information_schema.columns WHERE table_name = 'your_table';`
+
+**Fix Applied:**
+- Commit f97d430 fixed migration 00008 with this pattern
+
 ### Migration Safety:
 ✅ **All migrations (00001-00011) are now fully idempotent and safe to re-run!**
 
 All migrations use these safe patterns:
 - `CREATE OR REPLACE FUNCTION` (safe to re-run)
 - `CREATE TABLE IF NOT EXISTS` (safe to re-run)
+- `DROP TABLE IF EXISTS CASCADE` before `CREATE TABLE` (when table might exist from partial migration - see migration 00008)
 - `CREATE INDEX IF NOT EXISTS` (safe to re-run - fixed in commit 5b87adf)
 - `DROP POLICY IF EXISTS` before `CREATE POLICY` (safe to re-run - fixed in commit 5b87adf)
 - `DROP TRIGGER IF EXISTS` before `CREATE TRIGGER` (safe to re-run - fixed in commit 5b87adf)
 - Conditional column additions with `DO $$ BEGIN ... END $$;`
 
 **Validation:** Run `bash validate-migrations.sh` to verify idempotency
+
+**Special Note on Migration 00008:**
+- Uses `DROP TABLE IF EXISTS CASCADE` instead of `CREATE TABLE IF NOT EXISTS`
+- This handles partial migrations where tables exist with incomplete/wrong schema
+- Without DROP, PostgreSQL would skip CREATE but then fail on foreign key validation
+- Fixed in commit f97d430
 
 ### If you need to reset:
 **⚠️ WARNING: This deletes ALL data!**
