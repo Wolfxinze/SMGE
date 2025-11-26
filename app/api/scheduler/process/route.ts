@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
 import { processScheduledPosts } from '@/lib/scheduler/queue-processor';
 
 /**
@@ -21,13 +20,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-
     // Process scheduled posts using the queue processor
-    const result = await processScheduledPosts(supabase, {
-      lookaheadMinutes: 5,
-      maxBatchSize: 50,
-    });
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+    const result = await processScheduledPosts(supabaseUrl, supabaseServiceKey);
 
     return NextResponse.json({
       success: true,
