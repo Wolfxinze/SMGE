@@ -1,0 +1,4 @@
+functions:
+  - name: "process-scheduled-posts"
+    schedule: "* * * * *"  # Every minute
+    description: "Process scheduled social media posts in the queue"
