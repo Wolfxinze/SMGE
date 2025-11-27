@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  experimental: {
+    ppr: false,
+  },
 };
 
 export default nextConfig;

@@ -13,8 +13,9 @@ import { Brain, MessageSquare, Settings } from 'lucide-react'
 export default async function BrandVoicePage({
   params
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const supabase = await createClient()
 
   // Check authentication
@@ -27,7 +28,7 @@ export default async function BrandVoicePage({
   const { data: brand, error: brandError } = await (supabase
     .from('brands')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', user.id)
     .single() as any)
 
@@ -64,11 +65,11 @@ export default async function BrandVoicePage({
         </TabsList>
 
         <TabsContent value="settings">
-          <BrandVoiceForm brandId={params.id} />
+          <BrandVoiceForm brandId={id} />
         </TabsContent>
 
         <TabsContent value="learning">
-          <BrandLearningInterface brandId={params.id} />
+          <BrandLearningInterface brandId={id} />
         </TabsContent>
 
         <TabsContent value="preview">

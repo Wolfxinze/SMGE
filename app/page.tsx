@@ -1,3 +1,5 @@
+'use client'
+
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
