@@ -55,259 +55,40 @@ export interface Database {
         }
       }
 
-      // Brand Brain tables
+      // Brands
       brands: {
         Row: {
           id: string
           user_id: string
-          name: string
-          slug: string
-          description: string | null
-          website_url: string | null
-          industry: string | null
-          primary_color: string | null
-          secondary_color: string | null
-          is_active: boolean
           created_at: string
           updated_at: string
+          name: string
+          description: string | null
+          logo_url: string | null
+          website_url: string | null
+          is_active: boolean
         }
         Insert: {
           id?: string
           user_id: string
-          name: string
-          slug?: string
-          description?: string | null
-          website_url?: string | null
-          industry?: string | null
-          primary_color?: string | null
-          secondary_color?: string | null
-          is_active?: boolean
           created_at?: string
           updated_at?: string
+          name: string
+          description?: string | null
+          logo_url?: string | null
+          website_url?: string | null
+          is_active?: boolean
         }
         Update: {
           id?: string
           user_id?: string
+          created_at?: string
+          updated_at?: string
           name?: string
-          slug?: string
           description?: string | null
+          logo_url?: string | null
           website_url?: string | null
-          industry?: string | null
-          primary_color?: string | null
-          secondary_color?: string | null
           is_active?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-      }
-
-      brand_voice: {
-        Row: {
-          id: string
-          brand_id: string
-          tone: string[] | null
-          writing_style: string[] | null
-          communication_preferences: Json | null
-          keywords: string[] | null
-          avoid_phrases: string[] | null
-          content_themes: string[] | null
-          brand_values: string[] | null
-          unique_selling_points: string[] | null
-          voice_embedding: number[] | null
-          embedding_version: number | null
-          last_trained_at: string | null
-          training_sample_count: number | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          brand_id: string
-          tone?: string[] | null
-          writing_style?: string[] | null
-          communication_preferences?: Json | null
-          keywords?: string[] | null
-          avoid_phrases?: string[] | null
-          content_themes?: string[] | null
-          brand_values?: string[] | null
-          unique_selling_points?: string[] | null
-          voice_embedding?: number[] | null
-          embedding_version?: number | null
-          last_trained_at?: string | null
-          training_sample_count?: number | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          brand_id?: string
-          tone?: string[] | null
-          writing_style?: string[] | null
-          communication_preferences?: Json | null
-          keywords?: string[] | null
-          avoid_phrases?: string[] | null
-          content_themes?: string[] | null
-          brand_values?: string[] | null
-          unique_selling_points?: string[] | null
-          voice_embedding?: number[] | null
-          embedding_version?: number | null
-          last_trained_at?: string | null
-          training_sample_count?: number | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-
-      brand_content_examples: {
-        Row: {
-          id: string
-          brand_id: string
-          content_type: 'post' | 'caption' | 'story' | 'article' | 'email' | 'other'
-          platform: string | null
-          content_text: string
-          content_metadata: Json | null
-          embedding: number[] | null
-          performance_score: number
-          engagement_metrics: Json | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          brand_id: string
-          content_type: 'post' | 'caption' | 'story' | 'article' | 'email' | 'other'
-          platform?: string | null
-          content_text: string
-          content_metadata?: Json | null
-          embedding?: number[] | null
-          performance_score?: number
-          engagement_metrics?: Json | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          brand_id?: string
-          content_type?: 'post' | 'caption' | 'story' | 'article' | 'email' | 'other'
-          platform?: string | null
-          content_text?: string
-          content_metadata?: Json | null
-          embedding?: number[] | null
-          performance_score?: number
-          engagement_metrics?: Json | null
-          created_at?: string
-        }
-      }
-
-      target_audiences: {
-        Row: {
-          id: string
-          brand_id: string
-          name: string
-          demographics: Json | null
-          interests: string[] | null
-          pain_points: string[] | null
-          goals: string[] | null
-          preferred_platforms: string[] | null
-          content_preferences: Json | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          brand_id: string
-          name: string
-          demographics?: Json | null
-          interests?: string[] | null
-          pain_points?: string[] | null
-          goals?: string[] | null
-          preferred_platforms?: string[] | null
-          content_preferences?: Json | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          brand_id?: string
-          name?: string
-          demographics?: Json | null
-          interests?: string[] | null
-          pain_points?: string[] | null
-          goals?: string[] | null
-          preferred_platforms?: string[] | null
-          content_preferences?: Json | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-
-      brand_guidelines: {
-        Row: {
-          id: string
-          brand_id: string
-          guideline_type: 'visual' | 'content' | 'tone' | 'legal' | 'other'
-          title: string
-          description: string | null
-          rules: Json | null
-          examples: string[] | null
-          priority: 'critical' | 'high' | 'medium' | 'low'
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          brand_id: string
-          guideline_type: 'visual' | 'content' | 'tone' | 'legal' | 'other'
-          title: string
-          description?: string | null
-          rules?: Json | null
-          examples?: string[] | null
-          priority?: 'critical' | 'high' | 'medium' | 'low'
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          brand_id?: string
-          guideline_type?: 'visual' | 'content' | 'tone' | 'legal' | 'other'
-          title?: string
-          description?: string | null
-          rules?: Json | null
-          examples?: string[] | null
-          priority?: 'critical' | 'high' | 'medium' | 'low'
-          created_at?: string
-          updated_at?: string
-        }
-      }
-
-      brand_learning_history: {
-        Row: {
-          id: string
-          brand_id: string
-          learning_type: 'initial_training' | 'content_update' | 'voice_refinement' | 'manual_adjustment'
-          training_data: Json | null
-          samples_used: number | null
-          model_version: string | null
-          performance_metrics: Json | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          brand_id: string
-          learning_type: 'initial_training' | 'content_update' | 'voice_refinement' | 'manual_adjustment'
-          training_data?: Json | null
-          samples_used?: number | null
-          model_version?: string | null
-          performance_metrics?: Json | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          brand_id?: string
-          learning_type?: 'initial_training' | 'content_update' | 'voice_refinement' | 'manual_adjustment'
-          training_data?: Json | null
-          samples_used?: number | null
-          model_version?: string | null
-          performance_metrics?: Json | null
-          created_at?: string
         }
       }
 
@@ -510,6 +291,314 @@ export interface Database {
           created_at?: string
         }
       }
+
+      // Subscription plans
+      subscription_plans: {
+        Row: {
+          id: string
+          plan_id: 'free' | 'starter' | 'growth' | 'agency'
+          name: string
+          description: string | null
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          price_monthly_cents: number
+          price_yearly_cents: number | null
+          currency: string
+          limits: Json
+          is_active: boolean
+          display_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          plan_id: 'free' | 'starter' | 'growth' | 'agency'
+          name: string
+          description?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          price_monthly_cents: number
+          price_yearly_cents?: number | null
+          currency?: string
+          limits: Json
+          is_active?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          plan_id?: 'free' | 'starter' | 'growth' | 'agency'
+          name?: string
+          description?: string | null
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          price_monthly_cents?: number
+          price_yearly_cents?: number | null
+          currency?: string
+          limits?: Json
+          is_active?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      // User subscriptions
+      subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          stripe_customer_id: string
+          stripe_subscription_id: string | null
+          stripe_price_id: string | null
+          plan_id: 'free' | 'starter' | 'growth' | 'agency'
+          status: string
+          current_period_start: string
+          current_period_end: string
+          cancel_at_period_end: boolean
+          canceled_at: string | null
+          trial_start: string | null
+          trial_end: string | null
+          latest_invoice_id: string | null
+          default_payment_method: string | null
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          stripe_customer_id: string
+          stripe_subscription_id?: string | null
+          stripe_price_id?: string | null
+          plan_id?: 'free' | 'starter' | 'growth' | 'agency'
+          status?: string
+          current_period_start?: string
+          current_period_end?: string
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          trial_start?: string | null
+          trial_end?: string | null
+          latest_invoice_id?: string | null
+          default_payment_method?: string | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string | null
+          stripe_price_id?: string | null
+          plan_id?: 'free' | 'starter' | 'growth' | 'agency'
+          status?: string
+          current_period_start?: string
+          current_period_end?: string
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          trial_start?: string | null
+          trial_end?: string | null
+          latest_invoice_id?: string | null
+          default_payment_method?: string | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      // Invoices
+      invoices: {
+        Row: {
+          id: string
+          user_id: string
+          subscription_id: string | null
+          stripe_invoice_id: string
+          stripe_customer_id: string
+          amount_due: number
+          amount_paid: number
+          currency: string
+          status: string
+          period_start: string
+          period_end: string
+          hosted_invoice_url: string | null
+          invoice_pdf_url: string | null
+          payment_intent_id: string | null
+          paid_at: string | null
+          attempt_count: number
+          next_payment_attempt: string | null
+          last_finalization_error: Json | null
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          subscription_id?: string | null
+          stripe_invoice_id: string
+          stripe_customer_id: string
+          amount_due: number
+          amount_paid: number
+          currency: string
+          status: string
+          period_start: string
+          period_end: string
+          hosted_invoice_url?: string | null
+          invoice_pdf_url?: string | null
+          payment_intent_id?: string | null
+          paid_at?: string | null
+          attempt_count?: number
+          next_payment_attempt?: string | null
+          last_finalization_error?: Json | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          subscription_id?: string | null
+          stripe_invoice_id?: string
+          stripe_customer_id?: string
+          amount_due?: number
+          amount_paid?: number
+          currency?: string
+          status?: string
+          period_start?: string
+          period_end?: string
+          hosted_invoice_url?: string | null
+          invoice_pdf_url?: string | null
+          payment_intent_id?: string | null
+          paid_at?: string | null
+          attempt_count?: number
+          next_payment_attempt?: string | null
+          last_finalization_error?: Json | null
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      // Webhook events
+      webhook_events: {
+        Row: {
+          id: string
+          stripe_event_id: string
+          event_type: string
+          event_data: Json
+          processed: boolean
+          processed_at: string | null
+          processing_attempts: number
+          error_message: string | null
+          error_stack: string | null
+          api_version: string | null
+          request_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          stripe_event_id: string
+          event_type: string
+          event_data: Json
+          processed?: boolean
+          processed_at?: string | null
+          processing_attempts?: number
+          error_message?: string | null
+          error_stack?: string | null
+          api_version?: string | null
+          request_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          stripe_event_id?: string
+          event_type?: string
+          event_data?: Json
+          processed?: boolean
+          processed_at?: string | null
+          processing_attempts?: number
+          error_message?: string | null
+          error_stack?: string | null
+          api_version?: string | null
+          request_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      // Usage metrics
+      usage_metrics: {
+        Row: {
+          id: string
+          user_id: string
+          subscription_id: string | null
+          period_start: string
+          period_end: string
+          posts_created: number
+          posts_scheduled: number
+          posts_published: number
+          ai_credits_consumed: number
+          ai_image_generations: number
+          ai_content_generations: number
+          brands_created: number
+          social_accounts_connected: number
+          storage_bytes: number
+          media_files_count: number
+          api_calls: number
+          webhook_calls: number
+          metadata: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          subscription_id?: string | null
+          period_start: string
+          period_end: string
+          posts_created?: number
+          posts_scheduled?: number
+          posts_published?: number
+          ai_credits_consumed?: number
+          ai_image_generations?: number
+          ai_content_generations?: number
+          brands_created?: number
+          social_accounts_connected?: number
+          storage_bytes?: number
+          media_files_count?: number
+          api_calls?: number
+          webhook_calls?: number
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          subscription_id?: string | null
+          period_start?: string
+          period_end?: string
+          posts_created?: number
+          posts_scheduled?: number
+          posts_published?: number
+          ai_credits_consumed?: number
+          ai_image_generations?: number
+          ai_content_generations?: number
+          brands_created?: number
+          social_accounts_connected?: number
+          storage_bytes?: number
+          media_files_count?: number
+          api_calls?: number
+          webhook_calls?: number
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
 
     Views: {
@@ -517,52 +606,37 @@ export interface Database {
     }
 
     Functions: {
-      // Vector search functions
-      search_similar_voice: {
+      // Check if user can perform an action based on usage limits
+      check_usage_allowed: {
         Args: {
-          query_embedding: number[]
-          brand_id_filter: string
-          match_threshold: number
-          match_count: number
+          p_user_id: string
+          p_action: string
         }
-        Returns: Array<{
-          id: string
-          content_text: string
-          similarity: number
-          platform: string | null
-          performance_score: number
-        }>
+        Returns: {
+          allowed: boolean
+          current_usage: number
+          limit: number
+          percentage_used: number
+          message: string
+        }[]
       }
-      search_similar_content: {
+      // Get subscription plan limits for a user
+      get_subscription_limits: {
         Args: {
-          query_embedding: number[]
-          brand_id_filter: string
-          match_threshold: number
-          match_count: number
+          p_user_id: string
         }
-        Returns: Array<{
-          id: string
-          content_text: string
-          similarity: number
-          platform: string | null
-          performance_score: number
-        }>
+        Returns: {
+          limits: Json
+        }[]
       }
-      search_global_content: {
+      // Update usage metrics
+      update_usage_metric: {
         Args: {
-          query_embedding: number[]
-          user_id_filter: string
-          match_threshold: number
-          match_count: number
+          p_user_id: string
+          p_metric: string
+          p_amount: number
         }
-        Returns: Array<{
-          id: string
-          content_text: string
-          similarity: number
-          platform: string | null
-          performance_score: number
-          brand_name: string
-        }>
+        Returns: void
       }
     }
 

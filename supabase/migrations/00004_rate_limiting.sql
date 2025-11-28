@@ -17,11 +17,11 @@ CREATE TABLE public.api_rate_limits (
 );
 
 -- Create indexes for efficient rate limit checks
-CREATE INDEX idx_rate_limits_user_endpoint_time
+CREATE INDEX IF NOT EXISTS idx_rate_limits_user_endpoint_time
     ON public.api_rate_limits(user_id, endpoint, created_at DESC);
 
 -- Create index for cleanup operations
-CREATE INDEX idx_rate_limits_created_at
+CREATE INDEX IF NOT EXISTS idx_rate_limits_created_at
     ON public.api_rate_limits(created_at);
 
 -- ============================================================================
@@ -31,18 +31,21 @@ CREATE INDEX idx_rate_limits_created_at
 ALTER TABLE public.api_rate_limits ENABLE ROW LEVEL SECURITY;
 
 -- Users can only view their own rate limit records
+DROP POLICY IF EXISTS "Users can view own rate limits" ON public.api_rate_limits;
 CREATE POLICY "Users can view own rate limits"
     ON public.api_rate_limits
     FOR SELECT
     USING (auth.uid() = user_id);
 
 -- Users can insert their own rate limit records
+DROP POLICY IF EXISTS "Users can insert own rate limits" ON public.api_rate_limits;
 CREATE POLICY "Users can insert own rate limits"
     ON public.api_rate_limits
     FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
 -- Only service role can delete (for cleanup)
+DROP POLICY IF EXISTS "Service role can delete rate limits" ON public.api_rate_limits;
 CREATE POLICY "Service role can delete rate limits"
     ON public.api_rate_limits
     FOR DELETE
