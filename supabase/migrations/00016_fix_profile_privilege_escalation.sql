@@ -135,8 +135,9 @@ CREATE POLICY "Users can update own profile"
     USING (auth.uid() = id)
     WITH CHECK (
         auth.uid() = id
-        -- Prevent role escalation through updates
-        AND (role = OLD.role OR role = 'user')
+        -- SECURITY FIX: Role is immutable through regular updates
+        -- Role changes must go through dedicated admin functions only
+        AND role = OLD.role
     );
 
 -- ============================================================================
@@ -185,8 +186,9 @@ COMMENT ON POLICY "Users can create own profile" ON public.profiles IS
 Critical security policy to prevent privilege escalation.';
 
 COMMENT ON POLICY "Users can update own profile" ON public.profiles IS
-'Allows profile updates but prevents role escalation.
-Users cannot change their role to admin through profile updates.';
+'Allows profile updates but makes role field immutable.
+SECURITY FIX: Role changes are completely blocked - no escalation OR downgrade.
+Role modifications must use dedicated administrative functions only.';
 
 -- ============================================================================
 -- Step 7: Audit existing profiles for suspicious activity
