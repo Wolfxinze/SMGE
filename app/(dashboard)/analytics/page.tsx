@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
 import { MetricCard } from '@/components/analytics/MetricCard';
 import { EngagementChart } from '@/components/analytics/EngagementChart';
 import { PlatformComparisonChart } from '@/components/analytics/PlatformComparisonChart';
@@ -22,6 +24,7 @@ import {
   Heart,
   Calendar,
   RefreshCw,
+  ArrowLeft,
 } from 'lucide-react';
 
 interface Brand {
@@ -47,6 +50,7 @@ export default function AnalyticsPage() {
   const [selectedBrandId, setSelectedBrandId] = useState<string>('');
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [brandsLoading, setBrandsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [dateRange, setDateRange] = useState('30');
 
@@ -54,6 +58,17 @@ export default function AnalyticsPage() {
   useEffect(() => {
     async function fetchBrands() {
       try {
+        setBrandsLoading(true);
+
+        // Check authentication first
+        const supabase = createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+          router.push('/auth/signin');
+          return;
+        }
+
         const response = await fetch('/api/brands');
         if (response.ok) {
           const data = await response.json();
@@ -64,6 +79,8 @@ export default function AnalyticsPage() {
         }
       } catch (error) {
         console.error('Error fetching brands:', error);
+      } finally {
+        setBrandsLoading(false);
       }
     }
 
@@ -80,6 +97,15 @@ export default function AnalyticsPage() {
 
       try {
         setLoading(true);
+
+        // Check authentication first
+        const supabase = createClient();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+          router.push('/auth/signin');
+          return;
+        }
 
         // Calculate date range
         const endDate = new Date();
@@ -127,7 +153,8 @@ export default function AnalyticsPage() {
     return `${(rate * 100).toFixed(2)}%`;
   };
 
-  if (loading && !analytics) {
+  // Show loading state while fetching brands or analytics
+  if (brandsLoading || loading) {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center h-64">
@@ -137,6 +164,7 @@ export default function AnalyticsPage() {
     );
   }
 
+  // Show empty state only after loading is complete
   if (!selectedBrandId || brands.length === 0) {
     return (
       <div className="container mx-auto p-6">
@@ -154,6 +182,15 @@ export default function AnalyticsPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* Back Navigation */}
+      <Link
+        href="/dashboard"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Dashboard
+      </Link>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
