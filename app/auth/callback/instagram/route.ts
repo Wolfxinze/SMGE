@@ -3,10 +3,15 @@
  * GET /auth/callback/instagram
  *
  * Handles Instagram OAuth callback via Facebook's OAuth system.
+ *
+ * SECURITY:
+ * - Cookie-based CSRF validation (mandatory)
+ * - User ID always from authenticated session (never from URL)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 import { InstagramOAuthHelper } from '@/lib/scheduler/platforms/instagram';
 
 const GRAPH_API_VERSION = 'v18.0';
@@ -32,20 +37,34 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  let stateData: { user_id: string; brand_id: string; timestamp: number };
-  try {
-    stateData = JSON.parse(Buffer.from(state, 'base64url').toString());
-  } catch {
+  // SECURITY: Validate CSRF state parameter - cookie state is ALWAYS required
+  const cookieStore = await cookies();
+  const storedState = cookieStore.get('instagram_oauth_state')?.value;
+
+  // Cookie-based state validation is mandatory for CSRF protection
+  if (!storedState || !state || state !== storedState) {
     return NextResponse.redirect(
       new URL('/profile/social-accounts?error=invalid_state', requestUrl.origin)
     );
   }
 
-  // Validate state timestamp (10 minute window)
-  if (Date.now() - stateData.timestamp > 10 * 60 * 1000) {
-    return NextResponse.redirect(
-      new URL('/profile/social-accounts?error=state_expired', requestUrl.origin)
-    );
+  // Only after CSRF validation passes, try to extract additional metadata from state
+  // NOTE: This metadata is only used for non-security-critical purposes like brand_id
+  let stateData: { brand_id?: string; timestamp?: number } | null = null;
+  try {
+    stateData = JSON.parse(Buffer.from(state, 'base64url').toString());
+  } catch {
+    // State was valid for CSRF but not JSON-encoded - that's fine
+  }
+
+  // Validate state timestamp if present (optional expiry check)
+  if (stateData?.timestamp) {
+    const stateAge = Date.now() - stateData.timestamp;
+    if (stateAge > 10 * 60 * 1000) { // 10 minute expiry
+      return NextResponse.redirect(
+        new URL('/profile/social-accounts?error=state_expired', requestUrl.origin)
+      );
+    }
   }
 
   try {
@@ -90,8 +109,14 @@ export async function GET(request: NextRequest) {
 
     const expiresAt = new Date(Date.now() + (longLivedTokenData.expires_in || 5184000) * 1000);
 
-    // Store credentials
+    // SECURITY: Always get user from authenticated session - never trust URL state for user identity
     const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      throw new Error('User not authenticated');
+    }
+
     const encryptionSecret = process.env.SUPABASE_ENCRYPTION_SECRET;
 
     if (!encryptionSecret) throw new Error('SUPABASE_ENCRYPTION_SECRET not configured');
@@ -104,7 +129,7 @@ export async function GET(request: NextRequest) {
 
     const { error: dbError } = await supabase.from('social_accounts').upsert(
       {
-        user_id: stateData.user_id,
+        user_id: user.id,
         platform: 'instagram',
         account_name: selectedAccount.username,
         account_id: selectedAccount.id,
@@ -126,9 +151,13 @@ export async function GET(request: NextRequest) {
 
     if (dbError) throw dbError;
 
-    return NextResponse.redirect(
+    // Clear the OAuth state cookie and redirect to success
+    const response = NextResponse.redirect(
       new URL(`/profile/social-accounts?success=instagram&account=${encodeURIComponent(selectedAccount.username)}`, requestUrl.origin)
     );
+    response.cookies.delete('instagram_oauth_state');
+
+    return response;
   } catch (error) {
     console.error('Instagram OAuth callback error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Failed to connect Instagram account';
