@@ -352,6 +352,19 @@
     }
   }
 
+  /* Shake animation for error states */
+  @keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
+  }
+
   /* Animation utility classes */
   .animate-fade-in {
     animation: fadeIn 0.2s ease-out forwards;
@@ -404,6 +417,10 @@
 
   .animate-bounce-subtle {
     animation: bounceSubtle 2s ease-in-out infinite;
+  }
+
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
   }
 
   /* Skeleton loading utility */
