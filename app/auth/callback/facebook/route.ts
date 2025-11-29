@@ -81,11 +81,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Validate state to prevent CSRF attacks
+  // SECURITY: Validate CSRF state parameter - cookie state is ALWAYS required
   const cookieStore = await cookies();
   const storedState = cookieStore.get('facebook_oauth_state')?.value;
 
-  if (!state || state !== storedState) {
+  // Cookie-based state validation is mandatory for CSRF protection
+  if (!storedState || !state || state !== storedState) {
     return NextResponse.redirect(
       `${baseUrl}/profile/social-accounts?error=${encodeURIComponent(
         'Invalid state parameter - possible CSRF attack'
