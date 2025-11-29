@@ -196,6 +196,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Upload a photo to Facebook
+   * SECURITY: Uses Authorization header instead of token in request body
    */
   private async uploadPhoto(
     url: string,
@@ -205,12 +206,12 @@ export class FacebookPlatform extends BasePlatform {
     const response = await fetch(`${FACEBOOK_API_BASE}/${targetId}/photos`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         url,
         published: false, // Upload without publishing
-        access_token: token,
       }),
     });
 
@@ -228,6 +229,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Upload a video to Facebook
+   * SECURITY: Uses Authorization header instead of token in request body
    */
   private async uploadVideo(
     url: string,
@@ -239,11 +241,11 @@ export class FacebookPlatform extends BasePlatform {
     const initResponse = await fetch(`${FACEBOOK_API_BASE}/${targetId}/videos`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         file_url: url,
-        access_token: token,
       }),
     });
 
@@ -303,6 +305,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Publish text-only post
+   * SECURITY: Uses Authorization header instead of token in request body
    */
   private async publishTextPost(
     post: Post,
@@ -314,12 +317,10 @@ export class FacebookPlatform extends BasePlatform {
     const response = await fetch(`${FACEBOOK_API_BASE}/${targetId}/feed`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        message,
-        access_token: token,
-      }),
+      body: JSON.stringify({ message }),
     });
 
     if (!response.ok) {
@@ -339,6 +340,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Publish post with single image/video
+   * SECURITY: Uses Authorization header instead of token in request body
    */
   private async publishMediaPost(
     post: Post,
@@ -351,9 +353,7 @@ export class FacebookPlatform extends BasePlatform {
 
     const endpoint = isVideo ? 'videos' : 'photos';
 
-    const body: Record<string, any> = {
-      access_token: token,
-    };
+    const body: Record<string, any> = {};
 
     if (isVideo) {
       body.file_url = mediaUrl;
@@ -366,6 +366,7 @@ export class FacebookPlatform extends BasePlatform {
     const response = await fetch(`${FACEBOOK_API_BASE}/${targetId}/${endpoint}`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
@@ -388,6 +389,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Publish multi-image album post
+   * SECURITY: Uses Authorization header instead of token in request body
    */
   private async publishAlbumPost(
     post: Post,
@@ -402,12 +404,12 @@ export class FacebookPlatform extends BasePlatform {
       const uploadResponse = await fetch(`${FACEBOOK_API_BASE}/${targetId}/photos`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           url,
           published: false,
-          access_token: token,
         }),
       });
 
@@ -425,12 +427,12 @@ export class FacebookPlatform extends BasePlatform {
     const response = await fetch(`${FACEBOOK_API_BASE}/${targetId}/feed`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         message,
         attached_media: attachedMedia,
-        access_token: token,
       }),
     });
 
@@ -451,6 +453,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Publish link share post
+   * SECURITY: Uses Authorization header instead of token in request body
    */
   private async publishLinkPost(
     post: Post,
@@ -463,12 +466,12 @@ export class FacebookPlatform extends BasePlatform {
     const response = await fetch(`${FACEBOOK_API_BASE}/${targetId}/feed`, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         message,
         link,
-        access_token: token,
       }),
     });
 
@@ -489,6 +492,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Delete post from Facebook
+   * SECURITY: Uses Authorization header instead of token in request body
    */
   async deletePost(platformPostId: string): Promise<boolean> {
     try {
@@ -499,11 +503,8 @@ export class FacebookPlatform extends BasePlatform {
       const response = await fetch(`${FACEBOOK_API_BASE}/${platformPostId}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          access_token: token,
-        }),
       });
 
       return response.ok;
@@ -514,6 +515,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Fetch analytics for a post
+   * SECURITY: Uses Authorization header instead of URL parameter
    */
   async fetchAnalytics(platformPostId: string): Promise<Partial<PostingAnalytics>> {
     try {
@@ -525,7 +527,12 @@ export class FacebookPlatform extends BasePlatform {
       const response = await fetch(
         `${FACEBOOK_API_BASE}/${platformPostId}/insights?` +
         `metric=post_impressions,post_impressions_unique,post_engaged_users,` +
-        `post_clicks,post_reactions_by_type_total&access_token=${token}`
+        `post_clicks,post_reactions_by_type_total`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
       );
 
       if (!response.ok) {
@@ -543,7 +550,12 @@ export class FacebookPlatform extends BasePlatform {
 
       // Also fetch basic engagement data
       const engagementResponse = await fetch(
-        `${FACEBOOK_API_BASE}/${platformPostId}?fields=shares,comments.summary(true),reactions.summary(true)&access_token=${token}`
+        `${FACEBOOK_API_BASE}/${platformPostId}?fields=shares,comments.summary(true),reactions.summary(true)`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }
       );
 
       let shares = 0;
@@ -578,6 +590,7 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Get Facebook Page information
+   * SECURITY: Uses Authorization header instead of URL parameter
    */
   async getAccountInfo(): Promise<{
     account_id: string;
@@ -591,7 +604,12 @@ export class FacebookPlatform extends BasePlatform {
     const targetId = this.pageId || 'me';
 
     const response = await fetch(
-      `${FACEBOOK_API_BASE}/${targetId}?fields=id,name,followers_count,link&access_token=${token}`
+      `${FACEBOOK_API_BASE}/${targetId}?fields=id,name,followers_count,link`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }
     );
 
     if (!response.ok) {
@@ -768,15 +786,16 @@ export class FacebookPlatform extends BasePlatform {
 
   /**
    * Helper: Make authenticated request to Facebook API
+   * SECURITY: Uses Authorization header instead of URL parameter to prevent token leakage
    */
   private async makeRequest(endpoint: string, options: RequestInit = {}): Promise<Response> {
     const token = this.pageAccessToken || this.credentials.access_token;
-    const separator = endpoint.includes('?') ? '&' : '?';
-    const url = `${FACEBOOK_API_BASE}${endpoint}${separator}access_token=${token}`;
+    const url = `${FACEBOOK_API_BASE}${endpoint}`;
 
     return fetch(url, {
       ...options,
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
         ...options.headers,
       },

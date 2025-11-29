@@ -1,0 +1,68 @@
+Initialising login role...
+Connecting to remote database...
+Skipping migration README.md... (file name must match pattern "<timestamp>_name.sql")
+Do you want to push these migrations to the remote database?
+ • 00006_post_generator_schema.sql
+ • 00007_engagement_agent.sql
+ • 00008_engagement_agent_schema.sql
+ • 00009_payment_subscription_schema.sql
+ • 00010_social_scheduler_schema.sql
+ • 00011_free_tier_initialization.sql
+ • 00012_analytics_dashboard.sql
+ • 00013_agency_features_schema.sql
+
+ [Y/n] 
+Applying migration 00006_post_generator_schema.sql...
+ERROR: relation "public.brands" does not exist (SQLSTATE 42P01)                                                    
+At statement: 0                                                                                                    
+-- Post Generator System Schema                                                                                    
+-- Migration: 00005_post_generator_schema                                                                          
+-- Description: Schema for AI-generated social media posts with scheduling and analytics                           
+                                                                                                                   
+-- ============================================================================                                    
+-- POSTS TABLE - Generated and scheduled social media content                                                      
+-- ============================================================================                                    
+CREATE TABLE public.posts (                                                                                        
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),                                                                 
+    brand_id UUID NOT NULL REFERENCES public.brands(id) ON DELETE CASCADE,                                         
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,                                             
+                                                                                                                   
+    -- Content                                                                                                     
+    content TEXT NOT NULL,                                                                                         
+    content_type VARCHAR(50) NOT NULL, -- 'post', 'story', 'reel', 'thread', 'article'                             
+                                                                                                                   
+    -- Platform targeting                                                                                          
+    platform VARCHAR(50) NOT NULL, -- 'instagram', 'twitter', 'linkedin', 'tiktok', 'all'                          
+    platform_specific_data JSONB DEFAULT '{}'::jsonb, -- Platform-specific metadata                                
+                                                                                                                   
+    -- Media                                                                                                       
+    media_urls TEXT[], -- Array of media URLs (images/videos)                                                      
+    media_metadata JSONB DEFAULT '{}'::jsonb, -- Dimensions, durations, etc.                                       
+                                                                                                                   
+    -- Generation metadata                                                                                         
+    generation_prompt TEXT, -- Original prompt used for generation                                                 
+    ai_model VARCHAR(100), -- Model used (gpt-4, claude-3-sonnet, etc.)                                            
+    generation_params JSONB DEFAULT '{}'::jsonb, -- Temperature, max_tokens, etc.                                  
+                                                                                                                   
+    -- Scheduling                                                                                                  
+    status VARCHAR(50) DEFAULT 'draft', -- 'draft', 'scheduled', 'published', 'failed'                             
+    scheduled_for TIMESTAMPTZ, -- When to publish (null = draft)                                                   
+    published_at TIMESTAMPTZ, -- Actual publish time                                                               
+                                                                                                                   
+    -- Analytics (populated post-publish)                                                                          
+    views INTEGER DEFAULT 0,                                                                                       
+    likes INTEGER DEFAULT 0,                                                                                       
+    comments INTEGER DEFAULT 0,                                                                                    
+    shares INTEGER DEFAULT 0,                                                                                      
+    engagement_rate FLOAT,                                                                                         
+    analytics_data JSONB DEFAULT '{}'::jsonb,                                                                      
+                                                                                                                   
+    -- Metadata                                                                                                    
+    created_at TIMESTAMPTZ DEFAULT NOW(),                                                                          
+    updated_at TIMESTAMPTZ DEFAULT NOW(),                                                                          
+                                                                                                                   
+    -- Constraints                                                                                                 
+    CONSTRAINT valid_status CHECK (status IN ('draft', 'scheduled', 'publishing', 'published', 'failed')),         
+    CONSTRAINT valid_platform CHECK (platform IN ('instagram', 'twitter', 'linkedin', 'tiktok', 'facebook', 'all'))
+)                                                                                                                  
+Try rerunning the command with --debug to troubleshoot the error.

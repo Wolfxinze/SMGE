@@ -1,0 +1,629 @@
+Initialising login role...
+Connecting to remote database...
+Skipping migration README.md... (file name must match pattern "<timestamp>_name.sql")
+Do you want to push these migrations to the remote database?
+ • 00001_initial_schema.sql
+ • 00002_auth_schema.sql
+ • 00003_brand_brain_schema.sql
+ • 00004_rate_limiting.sql
+ • 00005_post_generator_base.sql
+ • 00006_post_generator_schema.sql
+ • 00007_engagement_agent.sql
+ • 00008_engagement_agent_schema.sql
+ • 00009_payment_subscription_schema.sql
+ • 00010_social_scheduler_schema.sql
+ • 00011_free_tier_initialization.sql
+ • 00012_analytics_dashboard.sql
+ • 00013_agency_features_schema.sql
+
+ [Y/n] 
+Applying migration 00001_initial_schema.sql...
+NOTICE (42710): extension "uuid-ossp" already exists, skipping
+NOTICE (42710): extension "pgcrypto" already exists, skipping
+Applying migration 00002_auth_schema.sql...
+NOTICE (00000): trigger "on_auth_user_created" for relation "auth.users" does not exist, skipping
+NOTICE (00000): trigger "on_auth_user_updated" for relation "auth.users" does not exist, skipping
+NOTICE (00000): policy "Service role can manage all profiles" for relation "public.profiles" does not exist, skipping
+NOTICE (00000): policy "Users can create own profile if missing" for relation "public.profiles" does not exist, skipping
+NOTICE (00000): policy "Users can manage own social accounts with auth" for relation "public.social_accounts" does not exist, skipping
+Applying migration 00003_brand_brain_schema.sql...
+NOTICE (42710): extension "vector" already exists, skipping
+NOTICE (00000): ivfflat index created with little data
+NOTICE (00000): ivfflat index created with little data
+NOTICE (00000): policy "Users can view own brands" for relation "public.brands" does not exist, skipping
+NOTICE (00000): policy "Users can create own brands" for relation "public.brands" does not exist, skipping
+NOTICE (00000): policy "Users can update own brands" for relation "public.brands" does not exist, skipping
+NOTICE (00000): policy "Users can delete own brands" for relation "public.brands" does not exist, skipping
+NOTICE (00000): policy "Users can view own brand voice" for relation "public.brand_voice" does not exist, skipping
+NOTICE (00000): policy "Users can create own brand voice" for relation "public.brand_voice" does not exist, skipping
+NOTICE (00000): policy "Users can update own brand voice" for relation "public.brand_voice" does not exist, skipping
+NOTICE (00000): policy "Users can delete own brand voice" for relation "public.brand_voice" does not exist, skipping
+NOTICE (00000): policy "Users can view own brand audiences" for relation "public.target_audiences" does not exist, skipping
+NOTICE (00000): policy "Users can create own brand audiences" for relation "public.target_audiences" does not exist, skipping
+NOTICE (00000): policy "Users can update own brand audiences" for relation "public.target_audiences" does not exist, skipping
+NOTICE (00000): policy "Users can delete own brand audiences" for relation "public.target_audiences" does not exist, skipping
+NOTICE (00000): policy "Users can view own brand content examples" for relation "public.brand_content_examples" does not exist, skipping
+NOTICE (00000): policy "Users can create own brand content examples" for relation "public.brand_content_examples" does not exist, skipping
+NOTICE (00000): policy "Users can update own brand content examples" for relation "public.brand_content_examples" does not exist, skipping
+NOTICE (00000): policy "Users can delete own brand content examples" for relation "public.brand_content_examples" does not exist, skipping
+NOTICE (00000): policy "Users can view own brand guidelines" for relation "public.brand_guidelines" does not exist, skipping
+NOTICE (00000): policy "Users can create own brand guidelines" for relation "public.brand_guidelines" does not exist, skipping
+NOTICE (00000): policy "Users can update own brand guidelines" for relation "public.brand_guidelines" does not exist, skipping
+NOTICE (00000): policy "Users can delete own brand guidelines" for relation "public.brand_guidelines" does not exist, skipping
+NOTICE (00000): trigger "update_brands_updated_at" for relation "public.brands" does not exist, skipping
+NOTICE (00000): trigger "update_brand_voice_updated_at" for relation "public.brand_voice" does not exist, skipping
+NOTICE (00000): trigger "update_target_audiences_updated_at" for relation "public.target_audiences" does not exist, skipping
+NOTICE (00000): trigger "update_brand_content_examples_updated_at" for relation "public.brand_content_examples" does not exist, skipping
+NOTICE (00000): trigger "update_brand_guidelines_updated_at" for relation "public.brand_guidelines" does not exist, skipping
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "halfvec_mul"
+WARNING (01007): no privileges were granted for "halfvec_concat"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "vector_accum"
+WARNING (01007): no privileges were granted for "vector_dims"
+WARNING (01007): no privileges were granted for "vector_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "binary_quantize"
+WARNING (01007): no privileges were granted for "vector_in"
+WARNING (01007): no privileges were granted for "vector_out"
+WARNING (01007): no privileges were granted for "vector_typmod_in"
+WARNING (01007): no privileges were granted for "vector_recv"
+WARNING (01007): no privileges were granted for "vector_send"
+WARNING (01007): no privileges were granted for "subvector"
+WARNING (01007): no privileges were granted for "vector_add"
+WARNING (01007): no privileges were granted for "vector_sub"
+WARNING (01007): no privileges were granted for "vector_mul"
+WARNING (01007): no privileges were granted for "vector_concat"
+WARNING (01007): no privileges were granted for "vector_lt"
+WARNING (01007): no privileges were granted for "vector_le"
+WARNING (01007): no privileges were granted for "vector_eq"
+WARNING (01007): no privileges were granted for "vector_ne"
+WARNING (01007): no privileges were granted for "vector_ge"
+WARNING (01007): no privileges were granted for "vector_gt"
+WARNING (01007): no privileges were granted for "vector_cmp"
+WARNING (01007): no privileges were granted for "vector_l2_squared_distance"
+WARNING (01007): no privileges were granted for "vector_negative_inner_product"
+WARNING (01007): no privileges were granted for "vector_spherical_distance"
+WARNING (01007): no privileges were granted for "vector_avg"
+WARNING (01007): no privileges were granted for "vector_combine"
+WARNING (01007): no privileges were granted for "avg"
+WARNING (01007): no privileges were granted for "sum"
+WARNING (01007): no privileges were granted for "vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "vector_to_float4"
+WARNING (01007): no privileges were granted for "ivfflathandler"
+WARNING (01007): no privileges were granted for "hnswhandler"
+WARNING (01007): no privileges were granted for "ivfflat_halfvec_support"
+WARNING (01007): no privileges were granted for "ivfflat_bit_support"
+WARNING (01007): no privileges were granted for "hnsw_halfvec_support"
+WARNING (01007): no privileges were granted for "hnsw_bit_support"
+WARNING (01007): no privileges were granted for "hnsw_sparsevec_support"
+WARNING (01007): no privileges were granted for "halfvec_in"
+WARNING (01007): no privileges were granted for "halfvec_out"
+WARNING (01007): no privileges were granted for "halfvec_typmod_in"
+WARNING (01007): no privileges were granted for "halfvec_recv"
+WARNING (01007): no privileges were granted for "halfvec_send"
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "vector_dims"
+WARNING (01007): no privileges were granted for "l2_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "binary_quantize"
+WARNING (01007): no privileges were granted for "subvector"
+WARNING (01007): no privileges were granted for "halfvec_add"
+WARNING (01007): no privileges were granted for "halfvec_sub"
+WARNING (01007): no privileges were granted for "halfvec_lt"
+WARNING (01007): no privileges were granted for "halfvec_le"
+WARNING (01007): no privileges were granted for "halfvec_eq"
+WARNING (01007): no privileges were granted for "halfvec_ne"
+WARNING (01007): no privileges were granted for "halfvec_ge"
+WARNING (01007): no privileges were granted for "halfvec_gt"
+WARNING (01007): no privileges were granted for "halfvec_cmp"
+WARNING (01007): no privileges were granted for "halfvec_l2_squared_distance"
+WARNING (01007): no privileges were granted for "halfvec_negative_inner_product"
+WARNING (01007): no privileges were granted for "halfvec_spherical_distance"
+WARNING (01007): no privileges were granted for "halfvec_accum"
+WARNING (01007): no privileges were granted for "halfvec_avg"
+WARNING (01007): no privileges were granted for "halfvec_combine"
+WARNING (01007): no privileges were granted for "avg"
+WARNING (01007): no privileges were granted for "sum"
+WARNING (01007): no privileges were granted for "halfvec"
+WARNING (01007): no privileges were granted for "halfvec_to_vector"
+WARNING (01007): no privileges were granted for "vector_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "halfvec_to_float4"
+WARNING (01007): no privileges were granted for "hamming_distance"
+WARNING (01007): no privileges were granted for "jaccard_distance"
+WARNING (01007): no privileges were granted for "sparsevec_in"
+WARNING (01007): no privileges were granted for "sparsevec_out"
+WARNING (01007): no privileges were granted for "sparsevec_typmod_in"
+WARNING (01007): no privileges were granted for "sparsevec_recv"
+WARNING (01007): no privileges were granted for "sparsevec_send"
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "l2_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "sparsevec_lt"
+WARNING (01007): no privileges were granted for "sparsevec_le"
+WARNING (01007): no privileges were granted for "sparsevec_eq"
+WARNING (01007): no privileges were granted for "sparsevec_ne"
+WARNING (01007): no privileges were granted for "sparsevec_ge"
+WARNING (01007): no privileges were granted for "sparsevec_negative_inner_product"
+WARNING (01007): no privileges were granted for "sparsevec_gt"
+WARNING (01007): no privileges were granted for "sparsevec_cmp"
+WARNING (01007): no privileges were granted for "sparsevec_l2_squared_distance"
+WARNING (01007): no privileges were granted for "sparsevec"
+WARNING (01007): no privileges were granted for "vector_to_sparsevec"
+WARNING (01007): no privileges were granted for "sparsevec_to_vector"
+WARNING (01007): no privileges were granted for "halfvec_to_sparsevec"
+WARNING (01007): no privileges were granted for "sparsevec_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+Applying migration 00004_rate_limiting.sql...
+NOTICE (00000): policy "Users can view own rate limits" for relation "public.api_rate_limits" does not exist, skipping
+NOTICE (00000): policy "Users can insert own rate limits" for relation "public.api_rate_limits" does not exist, skipping
+NOTICE (00000): policy "Service role can delete rate limits" for relation "public.api_rate_limits" does not exist, skipping
+Applying migration 00005_post_generator_base.sql...
+NOTICE (42P07): relation "brands" already exists, skipping
+NOTICE (00000): policy "Users can manage own brands" for relation "public.brands" does not exist, skipping
+NOTICE (42P07): relation "idx_brands_user_id" already exists, skipping
+NOTICE (00000): policy "Users can manage own post templates" for relation "public.post_templates" does not exist, skipping
+NOTICE (00000): policy "Users can manage own generated posts" for relation "public.generated_posts" does not exist, skipping
+NOTICE (00000): policy "Users can view own generation history" for relation "public.generation_history" does not exist, skipping
+NOTICE (00000): policy "Service role can insert generation history" for relation "public.generation_history" does not exist, skipping
+NOTICE (00000): policy "Users can manage own post media" for relation "public.post_media" does not exist, skipping
+NOTICE (00000): policy "Users can manage own content pillars" for relation "public.content_pillars" does not exist, skipping
+NOTICE (00000): trigger "update_post_templates_timestamp" for relation "public.post_templates" does not exist, skipping
+NOTICE (00000): trigger "update_generated_posts_timestamp" for relation "public.generated_posts" does not exist, skipping
+NOTICE (00000): trigger "update_content_pillars_timestamp" for relation "public.content_pillars" does not exist, skipping
+NOTICE (00000): trigger "track_generated_post_edits" for relation "public.generated_posts" does not exist, skipping
+Applying migration 00006_post_generator_schema.sql...
+NOTICE (00000): policy "Users can view own posts" for relation "public.posts" does not exist, skipping
+NOTICE (00000): policy "Users can create own posts" for relation "public.posts" does not exist, skipping
+NOTICE (00000): policy "Users can update own posts" for relation "public.posts" does not exist, skipping
+NOTICE (00000): policy "Users can delete own posts" for relation "public.posts" does not exist, skipping
+NOTICE (00000): policy "Users can view versions of own posts" for relation "public.post_versions" does not exist, skipping
+NOTICE (00000): policy "Users can create versions for own posts" for relation "public.post_versions" does not exist, skipping
+NOTICE (00000): trigger "posts_updated_at" for relation "public.posts" does not exist, skipping
+NOTICE (00000): trigger "posts_create_version" for relation "public.posts" does not exist, skipping
+Applying migration 00007_engagement_agent.sql...
+NOTICE (00000): policy "Users can view their brand's engagement items" for relation "engagement_items" does not exist, skipping
+NOTICE (00000): policy "Users can insert their brand's engagement items" for relation "engagement_items" does not exist, skipping
+NOTICE (00000): policy "Users can update their brand's engagement items" for relation "engagement_items" does not exist, skipping
+NOTICE (00000): policy "Users can view their brand's engagement responses" for relation "engagement_responses" does not exist, skipping
+NOTICE (00000): policy "Users can manage their brand's engagement responses" for relation "engagement_responses" does not exist, skipping
+NOTICE (00000): policy "Users can manage their brand's engagement rules" for relation "engagement_rules" does not exist, skipping
+NOTICE (00000): policy "Users can view their brand's engagement analytics" for relation "engagement_analytics" does not exist, skipping
+Applying migration 00008_engagement_agent_schema.sql...
+NOTICE (00000): drop cascades to constraint engagement_responses_engagement_item_id_fkey on table engagement_responses
+NOTICE (00000): table "generated_responses" does not exist, skipping
+NOTICE (00000): table "engagement_history" does not exist, skipping
+NOTICE (00000): policy "Users can view engagement for their brands" for relation "public.engagement_items" does not exist, skipping
+NOTICE (00000): policy "Users can insert engagement for their brands" for relation "public.engagement_items" does not exist, skipping
+NOTICE (00000): policy "Users can update engagement for their brands" for relation "public.engagement_items" does not exist, skipping
+NOTICE (00000): policy "Users can view responses for their brands" for relation "public.generated_responses" does not exist, skipping
+NOTICE (00000): policy "Users can insert responses for their brands" for relation "public.generated_responses" does not exist, skipping
+NOTICE (00000): policy "Users can update responses for their brands" for relation "public.generated_responses" does not exist, skipping
+NOTICE (00000): policy "Users can view history for their brands" for relation "public.engagement_history" does not exist, skipping
+NOTICE (00000): policy "Users can insert history for their brands" for relation "public.engagement_history" does not exist, skipping
+NOTICE (00000): policy "Users can manage rules for their brands" for relation "public.engagement_rules" does not exist, skipping
+NOTICE (00000): trigger "update_engagement_items_updated_at" for relation "public.engagement_items" does not exist, skipping
+NOTICE (00000): trigger "update_generated_responses_updated_at" for relation "public.generated_responses" does not exist, skipping
+NOTICE (00000): trigger "update_engagement_history_updated_at" for relation "public.engagement_history" does not exist, skipping
+NOTICE (00000): trigger "update_engagement_rules_updated_at" for relation "public.engagement_rules" does not exist, skipping
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "halfvec_mul"
+WARNING (01007): no privileges were granted for "halfvec_concat"
+WARNING (01007): no privileges were granted for "subvector"
+WARNING (01007): no privileges were granted for "vector_add"
+WARNING (01007): no privileges were granted for "vector_sub"
+WARNING (01007): no privileges were granted for "vector_mul"
+WARNING (01007): no privileges were granted for "vector_concat"
+WARNING (01007): no privileges were granted for "vector_lt"
+WARNING (01007): no privileges were granted for "vector_le"
+WARNING (01007): no privileges were granted for "vector_eq"
+WARNING (01007): no privileges were granted for "vector_ne"
+WARNING (01007): no privileges were granted for "vector_ge"
+WARNING (01007): no privileges were granted for "vector_gt"
+WARNING (01007): no privileges were granted for "vector_cmp"
+WARNING (01007): no privileges were granted for "vector_l2_squared_distance"
+WARNING (01007): no privileges were granted for "vector_negative_inner_product"
+WARNING (01007): no privileges were granted for "vector_spherical_distance"
+WARNING (01007): no privileges were granted for "vector_avg"
+WARNING (01007): no privileges were granted for "vector_combine"
+WARNING (01007): no privileges were granted for "avg"
+WARNING (01007): no privileges were granted for "sum"
+WARNING (01007): no privileges were granted for "vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "vector_to_float4"
+WARNING (01007): no privileges were granted for "ivfflathandler"
+WARNING (01007): no privileges were granted for "hnswhandler"
+WARNING (01007): no privileges were granted for "ivfflat_halfvec_support"
+WARNING (01007): no privileges were granted for "ivfflat_bit_support"
+WARNING (01007): no privileges were granted for "hnsw_halfvec_support"
+WARNING (01007): no privileges were granted for "hnsw_bit_support"
+WARNING (01007): no privileges were granted for "hnsw_sparsevec_support"
+WARNING (01007): no privileges were granted for "halfvec_in"
+WARNING (01007): no privileges were granted for "halfvec_out"
+WARNING (01007): no privileges were granted for "halfvec_typmod_in"
+WARNING (01007): no privileges were granted for "halfvec_recv"
+WARNING (01007): no privileges were granted for "halfvec_send"
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "vector_dims"
+WARNING (01007): no privileges were granted for "l2_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "binary_quantize"
+WARNING (01007): no privileges were granted for "subvector"
+WARNING (01007): no privileges were granted for "halfvec_add"
+WARNING (01007): no privileges were granted for "halfvec_sub"
+WARNING (01007): no privileges were granted for "halfvec_lt"
+WARNING (01007): no privileges were granted for "halfvec_le"
+WARNING (01007): no privileges were granted for "halfvec_eq"
+WARNING (01007): no privileges were granted for "halfvec_ne"
+WARNING (01007): no privileges were granted for "halfvec_ge"
+WARNING (01007): no privileges were granted for "halfvec_gt"
+WARNING (01007): no privileges were granted for "halfvec_cmp"
+WARNING (01007): no privileges were granted for "halfvec_l2_squared_distance"
+WARNING (01007): no privileges were granted for "halfvec_negative_inner_product"
+WARNING (01007): no privileges were granted for "halfvec_spherical_distance"
+WARNING (01007): no privileges were granted for "halfvec_accum"
+WARNING (01007): no privileges were granted for "halfvec_avg"
+WARNING (01007): no privileges were granted for "halfvec_combine"
+WARNING (01007): no privileges were granted for "avg"
+WARNING (01007): no privileges were granted for "sum"
+WARNING (01007): no privileges were granted for "halfvec"
+WARNING (01007): no privileges were granted for "halfvec_to_vector"
+WARNING (01007): no privileges were granted for "vector_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "halfvec_to_float4"
+WARNING (01007): no privileges were granted for "hamming_distance"
+WARNING (01007): no privileges were granted for "jaccard_distance"
+WARNING (01007): no privileges were granted for "sparsevec_in"
+WARNING (01007): no privileges were granted for "sparsevec_out"
+WARNING (01007): no privileges were granted for "sparsevec_typmod_in"
+WARNING (01007): no privileges were granted for "sparsevec_recv"
+WARNING (01007): no privileges were granted for "sparsevec_send"
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "l2_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "sparsevec_lt"
+WARNING (01007): no privileges were granted for "sparsevec_le"
+WARNING (01007): no privileges were granted for "sparsevec_eq"
+WARNING (01007): no privileges were granted for "sparsevec_ne"
+WARNING (01007): no privileges were granted for "sparsevec_ge"
+WARNING (01007): no privileges were granted for "sparsevec_negative_inner_product"
+WARNING (01007): no privileges were granted for "sparsevec_gt"
+WARNING (01007): no privileges were granted for "sparsevec_cmp"
+WARNING (01007): no privileges were granted for "sparsevec_l2_squared_distance"
+WARNING (01007): no privileges were granted for "sparsevec"
+WARNING (01007): no privileges were granted for "vector_to_sparsevec"
+WARNING (01007): no privileges were granted for "sparsevec_to_vector"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "vector_accum"
+WARNING (01007): no privileges were granted for "vector_dims"
+WARNING (01007): no privileges were granted for "vector_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "binary_quantize"
+WARNING (01007): no privileges were granted for "vector_in"
+WARNING (01007): no privileges were granted for "vector_out"
+WARNING (01007): no privileges were granted for "vector_typmod_in"
+WARNING (01007): no privileges were granted for "vector_recv"
+WARNING (01007): no privileges were granted for "vector_send"
+WARNING (01007): no privileges were granted for "halfvec_to_sparsevec"
+WARNING (01007): no privileges were granted for "sparsevec_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+Applying migration 00009_payment_subscription_schema.sql...
+NOTICE (00000): policy "Anyone can view active plans" for relation "public.subscription_plans" does not exist, skipping
+NOTICE (00000): policy "Service role can manage plans" for relation "public.subscription_plans" does not exist, skipping
+NOTICE (00000): policy "Users can view own subscriptions" for relation "public.subscriptions" does not exist, skipping
+NOTICE (00000): policy "Service role can manage all subscriptions" for relation "public.subscriptions" does not exist, skipping
+NOTICE (00000): policy "Users can view own usage metrics" for relation "public.usage_metrics" does not exist, skipping
+NOTICE (00000): policy "Service role can manage usage metrics" for relation "public.usage_metrics" does not exist, skipping
+NOTICE (00000): policy "Users can view own invoices" for relation "public.invoices" does not exist, skipping
+NOTICE (00000): policy "Service role can manage invoices" for relation "public.invoices" does not exist, skipping
+NOTICE (00000): policy "Service role can manage webhook events" for relation "public.webhook_events" does not exist, skipping
+NOTICE (00000): trigger "sync_subscription_to_profile_trigger" for relation "public.subscriptions" does not exist, skipping
+NOTICE (00000): trigger "update_subscription_plans_updated_at" for relation "public.subscription_plans" does not exist, skipping
+NOTICE (00000): trigger "update_subscriptions_updated_at" for relation "public.subscriptions" does not exist, skipping
+NOTICE (00000): trigger "update_usage_metrics_updated_at" for relation "public.usage_metrics" does not exist, skipping
+NOTICE (00000): trigger "update_invoices_updated_at" for relation "public.invoices" does not exist, skipping
+NOTICE (00000): trigger "update_webhook_events_updated_at" for relation "public.webhook_events" does not exist, skipping
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "halfvec_mul"
+WARNING (01007): no privileges were granted for "halfvec_concat"
+WARNING (01007): no privileges were granted for "sparsevec_eq"
+WARNING (01007): no privileges were granted for "subvector"
+WARNING (01007): no privileges were granted for "vector_add"
+WARNING (01007): no privileges were granted for "vector_sub"
+WARNING (01007): no privileges were granted for "vector_mul"
+WARNING (01007): no privileges were granted for "vector_concat"
+WARNING (01007): no privileges were granted for "vector_lt"
+WARNING (01007): no privileges were granted for "vector_le"
+WARNING (01007): no privileges were granted for "vector_eq"
+WARNING (01007): no privileges were granted for "vector_ne"
+WARNING (01007): no privileges were granted for "vector_ge"
+WARNING (01007): no privileges were granted for "vector_gt"
+WARNING (01007): no privileges were granted for "vector_cmp"
+WARNING (01007): no privileges were granted for "vector_l2_squared_distance"
+WARNING (01007): no privileges were granted for "vector_negative_inner_product"
+WARNING (01007): no privileges were granted for "vector_spherical_distance"
+WARNING (01007): no privileges were granted for "vector_avg"
+WARNING (01007): no privileges were granted for "vector_combine"
+WARNING (01007): no privileges were granted for "avg"
+WARNING (01007): no privileges were granted for "sum"
+WARNING (01007): no privileges were granted for "vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "vector_to_float4"
+WARNING (01007): no privileges were granted for "ivfflathandler"
+WARNING (01007): no privileges were granted for "hnswhandler"
+WARNING (01007): no privileges were granted for "ivfflat_halfvec_support"
+WARNING (01007): no privileges were granted for "ivfflat_bit_support"
+WARNING (01007): no privileges were granted for "hnsw_halfvec_support"
+WARNING (01007): no privileges were granted for "hnsw_bit_support"
+WARNING (01007): no privileges were granted for "hnsw_sparsevec_support"
+WARNING (01007): no privileges were granted for "halfvec_in"
+WARNING (01007): no privileges were granted for "halfvec_out"
+WARNING (01007): no privileges were granted for "halfvec_typmod_in"
+WARNING (01007): no privileges were granted for "halfvec_recv"
+WARNING (01007): no privileges were granted for "halfvec_send"
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "vector_dims"
+WARNING (01007): no privileges were granted for "l2_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "binary_quantize"
+WARNING (01007): no privileges were granted for "subvector"
+WARNING (01007): no privileges were granted for "halfvec_add"
+WARNING (01007): no privileges were granted for "halfvec_sub"
+WARNING (01007): no privileges were granted for "halfvec_lt"
+WARNING (01007): no privileges were granted for "halfvec_le"
+WARNING (01007): no privileges were granted for "halfvec_eq"
+WARNING (01007): no privileges were granted for "halfvec_ne"
+WARNING (01007): no privileges were granted for "halfvec_ge"
+WARNING (01007): no privileges were granted for "halfvec_gt"
+WARNING (01007): no privileges were granted for "halfvec_cmp"
+WARNING (01007): no privileges were granted for "halfvec_l2_squared_distance"
+WARNING (01007): no privileges were granted for "halfvec_negative_inner_product"
+WARNING (01007): no privileges were granted for "halfvec_spherical_distance"
+WARNING (01007): no privileges were granted for "halfvec_accum"
+WARNING (01007): no privileges were granted for "halfvec_avg"
+WARNING (01007): no privileges were granted for "halfvec_combine"
+WARNING (01007): no privileges were granted for "avg"
+WARNING (01007): no privileges were granted for "sum"
+WARNING (01007): no privileges were granted for "halfvec"
+WARNING (01007): no privileges were granted for "halfvec_to_vector"
+WARNING (01007): no privileges were granted for "vector_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "halfvec_to_float4"
+WARNING (01007): no privileges were granted for "hamming_distance"
+WARNING (01007): no privileges were granted for "jaccard_distance"
+WARNING (01007): no privileges were granted for "sparsevec_in"
+WARNING (01007): no privileges were granted for "sparsevec_out"
+WARNING (01007): no privileges were granted for "sparsevec_typmod_in"
+WARNING (01007): no privileges were granted for "sparsevec_recv"
+WARNING (01007): no privileges were granted for "sparsevec_send"
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "l2_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "sparsevec_lt"
+WARNING (01007): no privileges were granted for "sparsevec_le"
+WARNING (01007): no privileges were granted for "sparsevec_ne"
+WARNING (01007): no privileges were granted for "sparsevec_ge"
+WARNING (01007): no privileges were granted for "sparsevec_negative_inner_product"
+WARNING (01007): no privileges were granted for "sparsevec_gt"
+WARNING (01007): no privileges were granted for "sparsevec_cmp"
+WARNING (01007): no privileges were granted for "sparsevec_l2_squared_distance"
+WARNING (01007): no privileges were granted for "sparsevec"
+WARNING (01007): no privileges were granted for "vector_to_sparsevec"
+WARNING (01007): no privileges were granted for "sparsevec_to_vector"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "vector_accum"
+WARNING (01007): no privileges were granted for "vector_dims"
+WARNING (01007): no privileges were granted for "vector_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "binary_quantize"
+WARNING (01007): no privileges were granted for "vector_in"
+WARNING (01007): no privileges were granted for "vector_out"
+WARNING (01007): no privileges were granted for "vector_typmod_in"
+WARNING (01007): no privileges were granted for "vector_recv"
+WARNING (01007): no privileges were granted for "vector_send"
+WARNING (01007): no privileges were granted for "halfvec_to_sparsevec"
+WARNING (01007): no privileges were granted for "sparsevec_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+Applying migration 00010_social_scheduler_schema.sql...
+NOTICE (00000): drop cascades to 3 other objects
+NOTICE (00000): table "scheduled_posts" does not exist, skipping
+NOTICE (00000): table "platform_rate_limits" does not exist, skipping
+NOTICE (00000): table "posting_analytics" does not exist, skipping
+NOTICE (00000): policy "Users can view own posts" for relation "public.posts" does not exist, skipping
+NOTICE (00000): policy "Users can create posts for own brands" for relation "public.posts" does not exist, skipping
+NOTICE (00000): policy "Users can update own posts" for relation "public.posts" does not exist, skipping
+NOTICE (00000): policy "Users can delete own posts" for relation "public.posts" does not exist, skipping
+NOTICE (00000): policy "Users can view own scheduled posts" for relation "public.scheduled_posts" does not exist, skipping
+NOTICE (00000): policy "Users can create scheduled posts for own brands" for relation "public.scheduled_posts" does not exist, skipping
+NOTICE (00000): policy "Users can update own scheduled posts" for relation "public.scheduled_posts" does not exist, skipping
+NOTICE (00000): policy "Users can delete own scheduled posts" for relation "public.scheduled_posts" does not exist, skipping
+NOTICE (00000): policy "Users can view own rate limits" for relation "public.platform_rate_limits" does not exist, skipping
+NOTICE (00000): policy "Service role can manage rate limits" for relation "public.platform_rate_limits" does not exist, skipping
+NOTICE (00000): policy "Users can view own post analytics" for relation "public.posting_analytics" does not exist, skipping
+NOTICE (00000): policy "Service role can manage analytics" for relation "public.posting_analytics" does not exist, skipping
+NOTICE (00000): trigger "update_posts_updated_at" for relation "public.posts" does not exist, skipping
+NOTICE (00000): trigger "update_scheduled_posts_updated_at" for relation "public.scheduled_posts" does not exist, skipping
+NOTICE (00000): trigger "update_platform_rate_limits_updated_at" for relation "public.platform_rate_limits" does not exist, skipping
+NOTICE (00000): trigger "update_posting_analytics_updated_at" for relation "public.posting_analytics" does not exist, skipping
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "halfvec_mul"
+WARNING (01007): no privileges were granted for "halfvec_concat"
+WARNING (01007): no privileges were granted for "sparsevec_eq"
+WARNING (01007): no privileges were granted for "vector_ne"
+WARNING (01007): no privileges were granted for "subvector"
+WARNING (01007): no privileges were granted for "vector_add"
+WARNING (01007): no privileges were granted for "vector_sub"
+WARNING (01007): no privileges were granted for "vector_mul"
+WARNING (01007): no privileges were granted for "vector_concat"
+WARNING (01007): no privileges were granted for "vector_lt"
+WARNING (01007): no privileges were granted for "vector_le"
+WARNING (01007): no privileges were granted for "vector_eq"
+WARNING (01007): no privileges were granted for "vector_ge"
+WARNING (01007): no privileges were granted for "vector_gt"
+WARNING (01007): no privileges were granted for "vector_cmp"
+WARNING (01007): no privileges were granted for "vector_l2_squared_distance"
+WARNING (01007): no privileges were granted for "vector_negative_inner_product"
+WARNING (01007): no privileges were granted for "vector_spherical_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "vector_avg"
+WARNING (01007): no privileges were granted for "vector_combine"
+WARNING (01007): no privileges were granted for "avg"
+WARNING (01007): no privileges were granted for "sum"
+WARNING (01007): no privileges were granted for "vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "array_to_vector"
+WARNING (01007): no privileges were granted for "vector_to_float4"
+WARNING (01007): no privileges were granted for "ivfflathandler"
+WARNING (01007): no privileges were granted for "hnswhandler"
+WARNING (01007): no privileges were granted for "ivfflat_halfvec_support"
+WARNING (01007): no privileges were granted for "ivfflat_bit_support"
+WARNING (01007): no privileges were granted for "hnsw_halfvec_support"
+WARNING (01007): no privileges were granted for "vector_accum"
+WARNING (01007): no privileges were granted for "vector_dims"
+WARNING (01007): no privileges were granted for "vector_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "hnsw_bit_support"
+WARNING (01007): no privileges were granted for "hnsw_sparsevec_support"
+WARNING (01007): no privileges were granted for "halfvec_in"
+WARNING (01007): no privileges were granted for "halfvec_out"
+WARNING (01007): no privileges were granted for "halfvec_typmod_in"
+WARNING (01007): no privileges were granted for "halfvec_recv"
+WARNING (01007): no privileges were granted for "halfvec_send"
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "vector_dims"
+WARNING (01007): no privileges were granted for "l2_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "binary_quantize"
+WARNING (01007): no privileges were granted for "subvector"
+WARNING (01007): no privileges were granted for "halfvec_add"
+WARNING (01007): no privileges were granted for "halfvec_sub"
+WARNING (01007): no privileges were granted for "halfvec_lt"
+WARNING (01007): no privileges were granted for "halfvec_le"
+WARNING (01007): no privileges were granted for "halfvec_eq"
+WARNING (01007): no privileges were granted for "halfvec_ne"
+WARNING (01007): no privileges were granted for "halfvec_ge"
+WARNING (01007): no privileges were granted for "halfvec_gt"
+WARNING (01007): no privileges were granted for "halfvec_cmp"
+WARNING (01007): no privileges were granted for "halfvec_l2_squared_distance"
+WARNING (01007): no privileges were granted for "halfvec_negative_inner_product"
+WARNING (01007): no privileges were granted for "halfvec_spherical_distance"
+WARNING (01007): no privileges were granted for "halfvec_accum"
+WARNING (01007): no privileges were granted for "halfvec_avg"
+WARNING (01007): no privileges were granted for "halfvec_combine"
+WARNING (01007): no privileges were granted for "avg"
+WARNING (01007): no privileges were granted for "sum"
+WARNING (01007): no privileges were granted for "halfvec"
+WARNING (01007): no privileges were granted for "halfvec_to_vector"
+WARNING (01007): no privileges were granted for "vector_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_halfvec"
+WARNING (01007): no privileges were granted for "halfvec_to_float4"
+WARNING (01007): no privileges were granted for "hamming_distance"
+WARNING (01007): no privileges were granted for "jaccard_distance"
+WARNING (01007): no privileges were granted for "sparsevec_in"
+WARNING (01007): no privileges were granted for "sparsevec_out"
+WARNING (01007): no privileges were granted for "sparsevec_typmod_in"
+WARNING (01007): no privileges were granted for "sparsevec_recv"
+WARNING (01007): no privileges were granted for "sparsevec_send"
+WARNING (01007): no privileges were granted for "l2_distance"
+WARNING (01007): no privileges were granted for "inner_product"
+WARNING (01007): no privileges were granted for "cosine_distance"
+WARNING (01007): no privileges were granted for "l1_distance"
+WARNING (01007): no privileges were granted for "l2_norm"
+WARNING (01007): no privileges were granted for "l2_normalize"
+WARNING (01007): no privileges were granted for "sparsevec_lt"
+WARNING (01007): no privileges were granted for "sparsevec_le"
+WARNING (01007): no privileges were granted for "sparsevec_ne"
+WARNING (01007): no privileges were granted for "sparsevec_ge"
+WARNING (01007): no privileges were granted for "sparsevec_negative_inner_product"
+WARNING (01007): no privileges were granted for "sparsevec_gt"
+WARNING (01007): no privileges were granted for "sparsevec_cmp"
+WARNING (01007): no privileges were granted for "sparsevec_l2_squared_distance"
+WARNING (01007): no privileges were granted for "sparsevec"
+WARNING (01007): no privileges were granted for "vector_to_sparsevec"
+WARNING (01007): no privileges were granted for "sparsevec_to_vector"
+WARNING (01007): no privileges were granted for "binary_quantize"
+WARNING (01007): no privileges were granted for "vector_in"
+WARNING (01007): no privileges were granted for "vector_out"
+WARNING (01007): no privileges were granted for "vector_typmod_in"
+WARNING (01007): no privileges were granted for "vector_recv"
+WARNING (01007): no privileges were granted for "vector_send"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "halfvec_to_sparsevec"
+WARNING (01007): no privileges were granted for "sparsevec_to_halfvec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+WARNING (01007): no privileges were granted for "array_to_sparsevec"
+Applying migration 00011_free_tier_initialization.sql...
+NOTICE (00000): trigger "on_profile_created_initialize_free_tier" for relation "public.profiles" does not exist, skipping
+Applying migration 00012_analytics_dashboard.sql...
+NOTICE (42P07): relation "idx_scheduled_posts_status" already exists, skipping
+Applying migration 00013_agency_features_schema.sql...
+ERROR: syntax error at or near "s" (SQLSTATE 42601)                                                                    
+At statement: 50                                                                                                       
+-- Comment                                                                                                             
+COMMENT ON COLUMN public.profiles.current_agency_id IS 'User\'s currently selected agency workspace (session context)';
+                                                              ^                                                        
+Try rerunning the command with --debug to troubleshoot the error.

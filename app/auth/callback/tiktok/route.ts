@@ -69,32 +69,30 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Validate CSRF state parameter
-  // TikTok supports both cookie-based and URL-encoded state
+  // SECURITY: Validate CSRF state parameter - cookie state is ALWAYS required
   const cookieStore = await cookies();
   const storedState = cookieStore.get('tiktok_oauth_state')?.value;
 
-  // Try URL-encoded state if cookie not found
-  let stateData: { user_id: string; brand_id?: string; timestamp: number } | null = null;
-
-  if (state) {
-    try {
-      // State could be base64url encoded JSON
-      stateData = JSON.parse(Buffer.from(state, 'base64url').toString());
-    } catch {
-      // State might be a simple string for cookie comparison
-      if (storedState && state !== storedState) {
-        return NextResponse.redirect(
-          `${baseUrl}/profile/social-accounts?error=${encodeURIComponent(
-            'Invalid state parameter - possible CSRF attack'
-          )}`
-        );
-      }
-    }
+  // Cookie-based state validation is mandatory for CSRF protection
+  if (!storedState || !state || state !== storedState) {
+    return NextResponse.redirect(
+      `${baseUrl}/profile/social-accounts?error=${encodeURIComponent(
+        'Invalid state parameter - possible CSRF attack'
+      )}`
+    );
   }
 
-  // Validate state timestamp if using URL-encoded state
-  if (stateData && stateData.timestamp) {
+  // Only after CSRF validation passes, try to extract additional metadata from state
+  // NOTE: This metadata is only used for non-security-critical purposes like brand_id
+  let stateData: { brand_id?: string; timestamp?: number } | null = null;
+  try {
+    stateData = JSON.parse(Buffer.from(state, 'base64url').toString());
+  } catch {
+    // State was valid for CSRF but not JSON-encoded - that's fine
+  }
+
+  // Validate state timestamp if present (optional expiry check)
+  if (stateData?.timestamp) {
     const stateAge = Date.now() - stateData.timestamp;
     if (stateAge > 10 * 60 * 1000) { // 10 minute expiry
       return NextResponse.redirect(
@@ -114,21 +112,14 @@ export async function GET(request: NextRequest) {
     // Fetch user profile information
     const userInfo = await fetchUserInfo(tokenData.access_token);
 
-    // Get authenticated user from Supabase
+    // SECURITY: Always get user from authenticated session - never trust URL state for user identity
     const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    // If we have state data with user_id, use that; otherwise get from session
-    let userId: string;
-
-    if (stateData?.user_id) {
-      userId = stateData.user_id;
-    } else {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError || !user) {
-        throw new Error('User not authenticated');
-      }
-      userId = user.id;
+    if (authError || !user) {
+      throw new Error('User not authenticated');
     }
+    const userId = user.id;
 
     // Calculate token expiration
     // TikTok access tokens expire in ~24 hours by default

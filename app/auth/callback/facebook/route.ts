@@ -294,10 +294,16 @@ async function exchangeForLongLivedToken(
 
 /**
  * Fetch Facebook user profile information
+ * SECURITY: Uses Authorization header instead of URL parameter to prevent token leakage
  */
 async function fetchUserInfo(accessToken: string): Promise<FacebookUserInfo> {
   const response = await fetch(
-    `${FACEBOOK_API_BASE}/me?fields=id,name,email,picture&access_token=${accessToken}`
+    `${FACEBOOK_API_BASE}/me?fields=id,name,email,picture`,
+    {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    }
   );
 
   if (!response.ok) {
@@ -312,10 +318,16 @@ async function fetchUserInfo(accessToken: string): Promise<FacebookUserInfo> {
 
 /**
  * Fetch user's Facebook Pages
+ * SECURITY: Uses Authorization header instead of URL parameter to prevent token leakage
  */
 async function fetchUserPages(accessToken: string): Promise<FacebookPage[]> {
   const response = await fetch(
-    `${FACEBOOK_API_BASE}/me/accounts?fields=id,name,access_token,category&access_token=${accessToken}`
+    `${FACEBOOK_API_BASE}/me/accounts?fields=id,name,access_token,category`,
+    {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    }
   );
 
   if (!response.ok) {
