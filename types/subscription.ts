@@ -9,7 +9,16 @@ import type Stripe from 'stripe';
 // SUBSCRIPTION PLAN TYPES
 // ============================================================================
 
-export type PlanId = 'free' | 'starter' | 'growth' | 'agency';
+/**
+ * All subscription plan IDs including free tier
+ * Maps to PLAN_CONFIG in lib/stripe/client.ts
+ */
+export type PlanId = 'free' | 'starter' | 'professional' | 'business' | 'agency' | 'enterprise';
+
+/**
+ * @deprecated Use PlanId instead - 'growth' was renamed to 'professional'
+ */
+export type LegacyPlanId = 'free' | 'starter' | 'growth' | 'agency';
 
 export type SubscriptionStatus =
   | 'incomplete'

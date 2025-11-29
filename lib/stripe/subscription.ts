@@ -230,21 +230,45 @@ export async function incrementUsage(
 
 /**
  * Create a checkout session for subscription
+ *
+ * @param userId - The user's ID
+ * @param email - The user's email
+ * @param planId - The plan ID (e.g., 'starter', 'professional')
+ * @param successUrl - URL to redirect to on success
+ * @param cancelUrl - URL to redirect to on cancellation
+ * @param priceIdOverride - Optional: Use a specific Stripe Price ID instead of looking up from plan
  */
 export async function createCheckoutSession(
   userId: string,
   email: string,
   planId: PlanId,
   successUrl: string,
-  cancelUrl: string
+  cancelUrl: string,
+  priceIdOverride?: string
 ): Promise<{ sessionId: string; url: string | null }> {
   // Get or create Stripe customer
   const customerId = await getOrCreateCustomer(userId, email);
 
-  // Get price ID for plan
-  const priceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS];
-  if (!priceId) {
-    throw new Error(`Invalid plan: ${planId}`);
+  // Get price ID - use override if provided, otherwise look up from plan
+  let priceId: string;
+
+  if (priceIdOverride) {
+    priceId = priceIdOverride;
+  } else {
+    // Legacy lookup from STRIPE_PRICE_IDS
+    const lookupPriceId = STRIPE_PRICE_IDS[planId as keyof typeof STRIPE_PRICE_IDS];
+    if (!lookupPriceId) {
+      throw new Error(`Invalid plan: ${planId}`);
+    }
+    priceId = lookupPriceId;
+  }
+
+  // Validate the price ID before using it
+  if (!priceId || priceId.includes('PLACEHOLDER') || !priceId.startsWith('price_')) {
+    throw new Error(
+      `Stripe Price ID not configured for plan: ${planId}. ` +
+        'Please configure the appropriate STRIPE_PRICE_* environment variable.'
+    );
   }
 
   // Create checkout session
