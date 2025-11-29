@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
   if (error) {
     console.error('LinkedIn OAuth error:', error, errorDescription);
     return NextResponse.redirect(
-      `${baseUrl}/settings/social-accounts?error=${encodeURIComponent(
+      `${baseUrl}/profile/social-accounts?error=${encodeURIComponent(
         errorDescription || error
       )}`
     );
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
   // Validate required parameters
   if (!code) {
     return NextResponse.redirect(
-      `${baseUrl}/settings/social-accounts?error=${encodeURIComponent(
+      `${baseUrl}/profile/social-accounts?error=${encodeURIComponent(
         'Missing authorization code'
       )}`
     );
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
   if (!state || state !== storedState) {
     return NextResponse.redirect(
-      `${baseUrl}/settings/social-accounts?error=${encodeURIComponent(
+      `${baseUrl}/profile/social-accounts?error=${encodeURIComponent(
         'Invalid state parameter - possible CSRF attack'
       )}`
     );
@@ -109,6 +109,33 @@ export async function GET(request: NextRequest) {
       Date.now() + (tokenResponse.expires_in || 5184000) * 1000
     );
 
+    // Encrypt tokens before storage
+    const encryptionSecret = process.env.SUPABASE_ENCRYPTION_SECRET;
+    if (!encryptionSecret) {
+      throw new Error('SUPABASE_ENCRYPTION_SECRET not configured');
+    }
+
+    const { data: encryptedAccessToken, error: encryptAccessError } = await supabase.rpc(
+      'encrypt_token', { token: tokenResponse.access_token, secret: encryptionSecret }
+    );
+
+    if (encryptAccessError) {
+      console.error('Failed to encrypt access token:', encryptAccessError);
+      throw new Error('Failed to encrypt access token');
+    }
+
+    let encryptedRefreshToken = null;
+    if (tokenResponse.refresh_token) {
+      const { data: encryptedRefresh, error: encryptRefreshError } = await supabase.rpc(
+        'encrypt_token', { token: tokenResponse.refresh_token, secret: encryptionSecret }
+      );
+      if (encryptRefreshError) {
+        console.error('Failed to encrypt refresh token:', encryptRefreshError);
+        throw new Error('Failed to encrypt refresh token');
+      }
+      encryptedRefreshToken = encryptedRefresh;
+    }
+
     // Store or update social account in database
     const { error: upsertError } = await supabase.from('social_accounts').upsert(
       {
@@ -116,14 +143,14 @@ export async function GET(request: NextRequest) {
         platform: 'linkedin',
         account_id: userInfo.sub,
         account_name: userInfo.name,
-        access_token_encrypted: tokenResponse.access_token, // Note: Should be encrypted in production
-        refresh_token_encrypted: tokenResponse.refresh_token || null,
+        access_token_encrypted: encryptedAccessToken,
+        refresh_token_encrypted: encryptedRefreshToken,
         token_expires_at: expiresAt.toISOString(),
+        scopes: tokenResponse.scope.split(' '),
         is_active: true,
         metadata: {
           email: userInfo.email,
           picture: userInfo.picture,
-          scopes: tokenResponse.scope.split(' '),
         },
         updated_at: new Date().toISOString(),
       },
@@ -139,7 +166,7 @@ export async function GET(request: NextRequest) {
 
     // Clear the OAuth state cookie
     const response = NextResponse.redirect(
-      `${baseUrl}/settings/social-accounts?success=linkedin`
+      `${baseUrl}/profile/social-accounts?success=linkedin`
     );
 
     response.cookies.delete('linkedin_oauth_state');
@@ -149,7 +176,7 @@ export async function GET(request: NextRequest) {
     console.error('LinkedIn OAuth callback error:', err);
     const message = err instanceof Error ? err.message : 'Unknown error occurred';
     return NextResponse.redirect(
-      `${baseUrl}/settings/social-accounts?error=${encodeURIComponent(message)}`
+      `${baseUrl}/profile/social-accounts?error=${encodeURIComponent(message)}`
     );
   }
 }
