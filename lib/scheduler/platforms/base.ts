@@ -321,13 +321,22 @@ export class PlatformOAuthManager {
 
     switch (platform) {
       case 'instagram':
+        // Instagram uses Facebook's OAuth system for Business/Creator accounts
         return {
-          clientId: process.env.INSTAGRAM_CLIENT_ID!,
-          clientSecret: process.env.INSTAGRAM_CLIENT_SECRET!,
-          redirectUri: `${baseUrl}/api/scheduler/oauth/callback/instagram`,
-          scopes: ['instagram_basic', 'instagram_content_publish', 'pages_read_engagement'],
-          authorizationUrl: 'https://api.instagram.com/oauth/authorize',
-          tokenUrl: 'https://api.instagram.com/oauth/access_token',
+          clientId: process.env.FACEBOOK_APP_ID!,
+          clientSecret: process.env.FACEBOOK_APP_SECRET!,
+          redirectUri: `${baseUrl}/auth/callback/instagram`,
+          scopes: [
+            'instagram_basic',
+            'instagram_content_publish',
+            'instagram_manage_comments',
+            'instagram_manage_insights',
+            'pages_show_list',
+            'pages_read_engagement',
+            'business_management',
+          ],
+          authorizationUrl: 'https://www.facebook.com/v18.0/dialog/oauth',
+          tokenUrl: 'https://graph.facebook.com/v18.0/oauth/access_token',
         };
 
       case 'twitter':
