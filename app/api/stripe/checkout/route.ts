@@ -1,12 +1,31 @@
 /**
  * Stripe Checkout Session API
  * Creates a Stripe checkout session for subscription signup
+ *
+ * Supports two request formats:
+ * 1. Legacy: { priceId: "price_xxx" } - Direct Stripe Price ID
+ * 2. New: { planId: "starter", billingPeriod: "monthly" } - Plan-based selection
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createCheckoutSession } from '@/lib/stripe/subscription';
+import {
+  isValidPriceId,
+  getPlanByPriceId,
+  PLAN_CONFIG,
+  type PaidPlanId,
+  type BillingPeriod,
+} from '@/lib/stripe/client';
 import type { CreateCheckoutSessionRequest } from '@/types/subscription';
+
+/**
+ * Extended request body to support billing period selection
+ */
+interface CheckoutRequestBody extends CreateCheckoutSessionRequest {
+  planId?: PaidPlanId;
+  billingPeriod?: BillingPeriod;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,23 +42,85 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const body = (await request.json()) as CreateCheckoutSessionRequest;
-    const { priceId, successUrl, cancelUrl } = body;
+    const body = (await request.json()) as CheckoutRequestBody;
+    const { priceId, planId: requestedPlanId, billingPeriod, successUrl, cancelUrl } = body;
 
-    if (!priceId) {
-      return NextResponse.json({ error: 'Missing priceId' }, { status: 400 });
+    // Determine the plan ID and price ID to use
+    let resolvedPlanId: PaidPlanId | null = null;
+    let resolvedPriceId: string | null = null;
+
+    // Option 1: Direct priceId provided (legacy support)
+    if (priceId) {
+      // Validate the provided price ID
+      if (!isValidPriceId(priceId)) {
+        return NextResponse.json(
+          {
+            error: 'Invalid or unconfigured price ID',
+            message: 'The provided Stripe Price ID is not valid or has not been configured.',
+          },
+          { status: 400 }
+        );
+      }
+
+      // Look up plan from price ID
+      const planLookup = getPlanByPriceId(priceId);
+      if (!planLookup) {
+        return NextResponse.json(
+          {
+            error: 'Unknown price ID',
+            message: 'The provided Price ID does not match any configured plan.',
+          },
+          { status: 400 }
+        );
+      }
+
+      resolvedPlanId = planLookup.plan.id as PaidPlanId;
+      resolvedPriceId = priceId;
     }
+    // Option 2: planId and billingPeriod provided (new preferred method)
+    else if (requestedPlanId && billingPeriod) {
+      const plan = PLAN_CONFIG[requestedPlanId];
+      if (!plan) {
+        return NextResponse.json(
+          {
+            error: 'Invalid plan',
+            message: `Plan "${requestedPlanId}" does not exist.`,
+          },
+          { status: 400 }
+        );
+      }
 
-    // Map price ID to plan ID
-    const planIdMap: Record<string, string> = {
-      [process.env.STRIPE_PRICE_ID_STARTER || '']: 'starter',
-      [process.env.STRIPE_PRICE_ID_GROWTH || '']: 'growth',
-      [process.env.STRIPE_PRICE_ID_AGENCY || '']: 'agency',
-    };
+      // Get the appropriate price ID based on billing period
+      const targetPriceId = billingPeriod === 'monthly' ? plan.monthlyPriceId : plan.annualPriceId;
 
-    const planId = planIdMap[priceId];
-    if (!planId) {
-      return NextResponse.json({ error: 'Invalid price ID' }, { status: 400 });
+      // Validate the price ID is configured
+      if (!isValidPriceId(targetPriceId)) {
+        return NextResponse.json(
+          {
+            error: 'Plan not configured',
+            message: `The ${requestedPlanId} plan with ${billingPeriod} billing is not yet configured. Please contact support.`,
+            details: {
+              planId: requestedPlanId,
+              billingPeriod,
+              configured: false,
+            },
+          },
+          { status: 503 }
+        );
+      }
+
+      resolvedPlanId = requestedPlanId;
+      resolvedPriceId = targetPriceId;
+    }
+    // Neither option provided
+    else {
+      return NextResponse.json(
+        {
+          error: 'Missing required parameters',
+          message: 'Provide either "priceId" or both "planId" and "billingPeriod".',
+        },
+        { status: 400 }
+      );
     }
 
     // Get user email
@@ -53,9 +134,10 @@ export async function POST(request: NextRequest) {
     const session = await createCheckoutSession(
       user.id,
       email,
-      planId as any,
+      resolvedPlanId,
       successUrl || `${baseUrl}/dashboard/billing?success=true`,
-      cancelUrl || `${baseUrl}/dashboard/billing?canceled=true`
+      cancelUrl || `${baseUrl}/dashboard/billing?canceled=true`,
+      resolvedPriceId
     );
 
     return NextResponse.json({
@@ -64,6 +146,20 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error creating checkout session:', error);
+
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes('not configured')) {
+        return NextResponse.json(
+          {
+            error: 'Configuration error',
+            message: error.message,
+          },
+          { status: 503 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
       { status: 500 }

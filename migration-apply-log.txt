@@ -1,0 +1,31 @@
+Initialising login role...
+Connecting to remote database...
+Skipping migration README.md... (file name must match pattern "<timestamp>_name.sql")
+Do you want to push these migrations to the remote database?
+ • 00001_initial_schema.sql
+ • 00002_auth_schema.sql
+ • 00003_brand_brain_schema.sql
+ • 00004_rate_limiting.sql
+ • 00005_post_generator_base.sql
+ • 00006_post_generator_schema.sql
+ • 00007_engagement_agent.sql
+ • 00008_engagement_agent_schema.sql
+ • 00009_payment_subscription_schema.sql
+ • 00010_social_scheduler_schema.sql
+ • 00011_free_tier_initialization.sql
+ • 00012_analytics_dashboard.sql
+ • 00013_agency_features_schema.sql
+
+ [Y/n] 
+Applying migration 00001_initial_schema.sql...
+NOTICE (42710): extension "uuid-ossp" already exists, skipping
+NOTICE (42710): extension "pgcrypto" already exists, skipping
+NOTICE (42P07): relation "profiles" already exists, skipping
+ERROR: policy "Users can read own profile" for table "profiles" already exists (SQLSTATE 42710)
+At statement: 4                                                                                
+-- Users can read their own profile                                                            
+CREATE POLICY "Users can read own profile"                                                     
+    ON public.profiles                                                                         
+    FOR SELECT                                                                                 
+    USING (auth.uid() = id)                                                                    
+Try rerunning the command with --debug to troubleshoot the error.

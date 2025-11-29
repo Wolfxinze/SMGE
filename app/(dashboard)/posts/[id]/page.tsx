@@ -35,20 +35,20 @@ import {
 
 interface Post {
   id: string;
-  title: string;
+  title: string | null;
   body: string;
   content_type: string;
   status: 'draft' | 'scheduled' | 'published';
   created_at: string;
   updated_at: string;
-  published_at?: string;
+  published_at: string | null;
   brand_id: string;
   user_id: string;
-  hashtags?: string[];
-  brand?: {
+  hashtags: string[] | null;
+  brand: {
     id: string;
     name: string;
-  };
+  } | null;
 }
 
 export default function EditPostPage() {
@@ -101,7 +101,22 @@ export default function EditPostPage() {
         return;
       }
 
-      setPost(data);
+      // Map database response to Post interface
+      const postData: Post = {
+        id: data.id,
+        title: data.title,
+        body: data.body,
+        content_type: data.content_type,
+        status: data.status as 'draft' | 'scheduled' | 'published',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        published_at: data.published_at,
+        brand_id: data.brand_id,
+        user_id: data.user_id,
+        hashtags: Array.isArray(data.hashtags) ? data.hashtags as string[] : null,
+        brand: data.brand,
+      };
+      setPost(postData);
     } catch (err) {
       console.error('Error fetching post:', err);
       setError(err instanceof Error ? err.message : 'Failed to load post');

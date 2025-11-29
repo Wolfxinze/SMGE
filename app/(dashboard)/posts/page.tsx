@@ -24,17 +24,17 @@ import { ArrowLeft, Plus, RefreshCw, Calendar, Edit } from 'lucide-react';
 
 interface Post {
   id: string;
-  title: string;
+  title: string | null;
   body: string;
   content_type: string;
   status: 'draft' | 'scheduled' | 'published';
   created_at: string;
   updated_at: string;
-  published_at?: string;
+  published_at: string | null;
   brand: {
     id: string;
     name: string;
-  };
+  } | null;
 }
 
 export default function PostsPage() {
@@ -86,7 +86,19 @@ export default function PostsPage() {
 
       if (error) throw error;
 
-      setPosts(data || []);
+      // Map database response to Post interface
+      const mappedPosts: Post[] = (data || []).map((post) => ({
+        id: post.id,
+        title: post.title,
+        body: post.body,
+        content_type: post.content_type,
+        status: post.status as 'draft' | 'scheduled' | 'published',
+        created_at: post.created_at,
+        updated_at: post.updated_at,
+        published_at: post.published_at,
+        brand: post.brand,
+      }));
+      setPosts(mappedPosts);
     } catch (error) {
       console.error('Error fetching posts:', error);
     } finally {
